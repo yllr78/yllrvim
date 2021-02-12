@@ -63,37 +63,6 @@ if (g:iswindows && g:isGUI)
         silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
     endfunction
 endif
-" -----------------------------------------------------------------------------
-"  < Linux Gvim/Vim 默认配置> 做了一点修改
-" -----------------------------------------------------------------------------
-if g:islinux
-    " Uncomment the following to have Vim jump to the last position when
-    " reopening a file
-    if has("autocmd")
-        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-    endif
-
-    if g:isGUI
-        " Source a global configuration file if available
-        if filereadable("/etc/vim/gvimrc.local")
-            source /etc/vim/gvimrc.local
-        endif
-    else
-        " This line should not be removed as it ensures that various options are
-        " properly set to work with the Vim-related packages available in Debian.
-        runtime! debian.vim
-
-        " set t_Co=256                   " 在终端启用256色
-        if has("termguicolors")          "在终端启用真彩
-            set termguicolors
-        endif
-
-        " Source a global configuration file if available
-        if filereadable("/etc/vim/vimrc.local")
-            source /etc/vim/vimrc.local
-        endif
-    endif
-endif
 
 
 " =============================================================================
@@ -153,14 +122,12 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'preservim/tagbar'
 Plug 'vim-scripts/taglist.vim'
 Plug 'simnalamburt/vim-mundo', {'on': 'MundoToggle'}
-Plug 'maralla/completor.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Chiel92/vim-autoformat'
 Plug 'vim-scripts/repeat.vim'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'wesleyche/SrcExpl'
 Plug 'tpope/vim-surround'
-Plug 'dense-analysis/ale'
 Plug 'vim-scripts/ZoomWin'
 Plug 'iamcco/mathjax-support-for-mkdp', {'for': 'markdown'}
 Plug 'iamcco/markdown-preview.vim', {'for': 'markdown'}
@@ -216,7 +183,7 @@ set fileencodings=ucs-bom,utf-8,gbk,gb18030,cp936,big5,euc-jp,euc-kr,latin     "
 set langmenu=zh_CN.UTF-8                              "启用中文菜单
 set helplang=cn                                       "启用中文帮助
 let $LANG='en_US.UTF-8'                               "默认语言建议设置成英文
-set ambiwidth=double                                  "防止Unicode特殊符号无法显示
+set ambiwidth=single                                 "防止Unicode特殊符号无法显示
 " 文件格式，默认 ffs=dos,unix
 set fileformat=unix                                   "设置新文件的<EOL>格式
 set fileformats=unix,dos,mac                          "给出文件的<EOL>格式类型
@@ -228,19 +195,65 @@ if (g:iswindows && g:isGUI)
     language messages zh_CN.utf-8
 endif
 
+
+" -----------------------------------------------------------------------------
+"  < 剪贴板配置 >
+" -----------------------------------------------------------------------------
+set clipboard+=unnamed                                "默认寄存器和系统剪贴板共享
+
+
+" -----------------------------------------------------------------------------
+"  < 数据文件配置 >
+" -----------------------------------------------------------------------------
+set history=10000 noswapfile
+" 自动拼写检查设置
+set nospell
+" if g:islinux
+    " set spellfile=$HOME/.vim/spell/en.utf-8.add
+" else
+    " set spellfile=$VIMRUNTIME\spell\en.utf-8.add  "有错，待解决
+" endif
+"  禁止自动生成备份文件
+set nobackup nowritebackup
+if g:islinux
+    set backupdir=$HOME/.cache/backup_dir
+else
+    set backupdir=$VIM\cache\backup_dir
+endif
+" undo设置
+set undofile undolevels=1000
+if g:islinux
+    set undodir=$HOME/.cache/vim/undo_dir
+else
+    set undodir=$VIM\cache\undo_dir
+endif
+" -----------------------------------------------------------------------------
+"  < 编辑器性能配置 >
+" -----------------------------------------------------------------------------
+set updatetime=100 timeout timeoutlen=500 ttimeout ttimeoutlen=50 nolazyredraw
+
+" -----------------------------------------------------------------------------
+"  < 声音告警配置 >
+" -----------------------------------------------------------------------------
+set noerrorbells novisualbell t_vb=
+
+" -----------------------------------------------------------------------------
+"  < 补全配置 >
+" -----------------------------------------------------------------------------
+set complete& completeopt=menuone,noinsert infercase pumheight=10 noshowfulltag shortmess+=c
+
+" -----------------------------------------------------------------------------
+"  < 搜索配置 >
+" -----------------------------------------------------------------------------
+set wrapscan ignorecase smartcase incsearch hlsearch magic shortmess-=S
+
+
 " -----------------------------------------------------------------------------
 "  < 编写文件时的配置 >
 " -----------------------------------------------------------------------------
 set wildmenu                                          "开启命令行菜单列表
 set wildmode=list:longest,full                        "开启命令行补全
-set completeopt=preview,menu                          "开启补全
-set writebackup                                       "保存文件前建立备份，保存成功后删除该备份
-set nobackup                                          "设置无备份文件
-set noswapfile                                        "设置无临时文件
-" set noundofile                                        "设置无临时undo文件
-set history=1024                                      "保存1024条历史命令
 set autochdir                                         "自动切换目录为当前编辑文件所在目录
-" set whichwrap=b,s,<,>,[,]                           "打开自动跨行操作功能（不建议）
 set nobomb                                            "不使用bomb标志
 set backspace=indent,eol,start                        "允许backspace处理缩进
 filetype on                                           "启用文件类型侦测
@@ -258,29 +271,27 @@ set foldenable                                        "启用折叠
 set foldlevel=100                                     "启动vim时不要自动折叠代码
 set foldmethod=indent                                 "indent 折叠方式
 " set foldmethod=marker                                "marker 折叠方式
-set clipboard+=unnamed                                "默认寄存器和系统剪贴板共享
 set winaltkeys=no                                     "设置alt键不映射到菜单栏
-set hlsearch                                          "高亮搜索
 set incsearch                                         "在输入要搜索的文字时，实时匹配
 set mouse=a                                           " 在任何模式下启用鼠标
 " 启用语法高亮
 if has("syntax")
     syntax on
 endif
-set noeb                                               "关闭输入错误的提示声音
 set confirm                                            "处理为保存或只读文件时弹出确认
 set viminfo+=!                                         "保存全局变量
 set iskeyword+=_,$,@,%,#,-                             "带有指定符号的单词不被换行分割"
 set backspace=2                                        "使回格键（backspace）正常处理indent, eol, start等
 au BufRead,BufNewFile * setfiletype txt                "高亮txt文件
+set autoread                                           "当文件在外部被修改，自动更新该文件
 set autowrite                                          "自动保存文件
+set hidden                                             "支持未保存的缓冲区跳转
 
 
 " 用空格键来开关折叠
 nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
-" 当文件在外部被修改，自动更新该文件
-set autoread
+
 
 " 比较文件
 nmap <C-F2> :vert diffsplit
@@ -300,10 +311,6 @@ nmap cM :%s/\r$//g<CR>:noh<CR>
 
 " 常规模式下输入 cL 清楚文件所有的空行
 nmap cL :g/^\s*$/d<CR>
-
-set ignorecase                                        "搜索模式里忽略大小写
-set smartcase                                         "如果搜索模式包含大写字符，不使用 'ignorecase' 选项，只有在输入搜索模式并且打开 'ignorecase' 选项时才会使用
-" set noincsearch                                       "在输入要搜索的文字时，取消实时匹配
 
 " 在后面的搜索中禁用高亮显示
 " removes highlight of your last search
@@ -349,25 +356,42 @@ au BufWinEnter * let w:m2=matchadd('Underlined', '\%>' . 80 . 'v.\+', -1)
 " -----------------------------------------------------------------------------
 "  < 界面配置 >
 " -----------------------------------------------------------------------------
-set number                                            "显示行号
-set relativenumber                                    "显示相对行号
-set ruler                                             "打开状态栏标尺
+set number relativenumber                             "显示行号和相对行号
+set noshowcmd ruler rulerformat= laststatus=2         "不显示输入的命令和状态栏标尺
+set display=lastline,uhex                             "显示设置
 set showtabline=2                                     "显示顶部tabline
-set laststatus=2                                      "启用状态栏信息
-set cmdheight=2                                       "设置命令行的高度为2，默认为1
-set cursorline                                        "突出显示当前行
-" set cursorcolumn                                      "突出显示当前列
-set showcmd                                           "显示输入的命令
+" 设置括号配对高亮
+set showmatch matchtime=0 matchpairs+=<:>,《:》,（:）,【:】,“:”,‘:’
+" 设置命令行的高度为1
+set showmode cmdheight=1 cmdwinheight=1 showbreak= breakindent breakindentopt=
+" 窗口标题设置
+set title titlelen=100 titleold= titlestring=%f noicon norightleft
+" 突出显示当前行
+set cursorline nocursorcolumn colorcolumn= concealcursor=nvc conceallevel=0
+" 显示不可见字符
+set list listchars=tab:\|\ ,extends:>,precedes:< synmaxcol=3000
+" 设置分屏模式、跨行模式、滚屏模式
+set nosplitbelow nosplitright nostartofline linespace=0 whichwrap=b,s scrolloff=5 sidescroll=0
+" 分割窗口设置
+set equalalways winfixwidth winfixheight winminwidth=3 winheight=3 winminheight=3
+" 终端设置
+set termguicolors cpoptions+=I  nowarn noconfirm
+" gui设置
+set guicursor=n-v-c-sm:block,i-ci-ve:block,r-cr-o:hor20
 set go=                                               "不要图形按钮
 set guifont=Hack:h12                                  "设置字体:字号（字体名称空格用下划线代替）
 " set guifont=Monaco_for_Powerline:h11                  "设置字体:字号（字体名称空格用下划线代替）
 " set nowrap                                            "设置不自动换行
-set report=0                                           "命令行提示文件哪里被改动
-set showmatch                                          "高亮显示匹配的括号
-set scrolloff=3                                        "光标移动到buff顶部和底部保持3行距离
-set wrap                                              "设置自动换行
-set shortmess=atI                                     "去掉欢迎界面
-set nolist                                            "不显示不可见字符
+set report=0                                          "命令行提示文件哪里被改动
+set wrap wrapmargin=0                                 "设置自动换行
+set shortmess+=I                                      "去掉欢迎界面
+" 显示标号栏
+if has("patch-8.1.1564")
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=yes
+endif
 " set listchars=tab:▶\ ,eol:¬,trail:·,extends:>,precedes:<     "显示不可见字符
 " 设置 gVim 窗口初始位置及大小
 if g:isGUI
@@ -647,9 +671,9 @@ noremap <silent> <leader>fr :<C-U><C-R>=printf("Leaderf rg %s", "")<CR><CR>
 noremap <silent> <leader>fc :<C-U>Leaderf! --recall --stayOpen<CR>
 
 " 从当前buff中搜索光标所在行的内容
-noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <silent> <leader>fi :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
 " 从当前目录所有文件中搜索当前光标所在行的内容
-noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+noremap <silent> <leader>fa :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
 " 可视模式下在当前目录下所有文件中搜索选择内容
 xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 
@@ -717,7 +741,6 @@ map <silent> <Space>F <Plug>(easymotion-bd-f)
 " -----------------------------------------------------------------------------
 "  在屏幕左侧显示Git变更的支持插件
 "  自动更新频率设置
-set updatetime=100
 
 
 " -----------------------------------------------------------------------------
@@ -752,21 +775,105 @@ let g:indentLine_fileTypeExclude = [
 " java 补全插件
 
 
-
 " -----------------------------------------------------------------------------
-"  < completor 插件配置 >
+"  < coc.nvim 插件配置 >
 " -----------------------------------------------------------------------------
-" 关键字补全、文件路径补全、tag补全等等，各种，非常好用，速度超快。
-noremap <silent> <leader>pd :call completor#do('definition')<CR> "跳转到定义"
-noremap <silent> <leader>pc :call completor#do('doc')<CR> "跳转到文档"
-noremap <silent> <leader>pf :call completor#do('format')<CR> "格式化代码"
-noremap <silent> <leader>ps :call completor#do('hover')<CR> "悬停信息"
-" 关闭预览功能
-let g:completor_complete_options = 'menuone,noselect'
-" 打开预览功能
-" let g:completor_complete_options = 'menuone,noselect,preview'
-" 触发完成延迟设置（单位毫秒，默认80）
-let g:completor_completion_delay = 30
+if g:islinux
+    let g:coc_data_home = '$HOME/.vim/coc'
+else
+    let g:coc_data_home = '$VIM/vimfiles/coc'
+endif
+nnoremap <silent><nowait> <C-b> :call fn#keymap#n#scroll_win(0)<CR>
+nnoremap <silent><nowait> <C-f> :call fn#keymap#n#scroll_win(1)<CR>
+inoremap <silent><nowait><expr> <C-f>
+      \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" :
+      \ "<C-r>=fn#keymap#exec('normal! w')<CR>"
+inoremap <silent><nowait><expr> <C-b>
+      \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" :
+      \ "<C-r>=fn#keymap#exec('normal! b')<CR>"
+nnoremap <expr> <silent> <C-c> <SID>select_current_word_and_go_next()
+function! s:select_current_word_and_go_next()
+  if !get(g:, 'coc_cursors_activated', 0)
+    return "\<Plug>(coc-cursors-word)"
+  endif
+  " based on coc readme, this has been modified
+  " because I have mapped * to m`:keepjumps normal! *``zz<cr>
+  return "*n\<Plug>(coc-cursors-word):nohlsearch\<CR>"
+endfunc
+nmap     <silent> <M-n>      <Plug>(coc-diagnostic-next)
+nmap     <silent> <M-p>      <Plug>(coc-diagnostic-prev)
+nnoremap <silent> cl         :<C-u>CocList<CR>
+nnoremap <silent> <Leader>cs :<C-u>CocSearch <C-r><C-w><CR>
+nmap     <silent> <Leader>cf <Plug>(coc-fix-current)
+nmap     <silent> <Leader>cd <Plug>(coc-definition)
+nmap     <silent> <Leader>cr <Plug>(coc-refactor)
+nmap     <silent> <Leader>ci <Plug>(coc-implementation)
+nmap     <silent> <Leader>rn <Plug>(coc-rename)
+nmap     <silent> <Leader>rf <Plug>(coc-references-used)
+nnoremap <silent> <Leader>rs :<C-u>CocRestart<CR>
+xmap if <Plug>(coc-funcobj-a)
+omap if <Plug>(coc-funcobj-a)
+omap ig <Plug>(coc-git-chunk-inner)
+xmap ig <Plug>(coc-git-chunk-inner)
+" coc-git
+nnoremap <silent> gs  :CocCommand git.chunkStage<CR>
+nnoremap <silent> go  :CocCommand git.browserOpen<CR>
+nnoremap <silent> gd  :CocCommand git.chunkInfo<CR>
+nnoremap <silent> gm  :CocCommand git.showCommit<CR>
+nnoremap <silent> gw  :call fn#file#refresh()<CR>:Gw<CR>:call fn#file#refresh()<CR>
+nnoremap <silent> gW  :AsyncRun -cwd=<root> -silent=1 git add .<CR>
+nnoremap <silent> gca :Gcommit --amend -v<CR>
+nnoremap <silent> gcm :Gcommit -v<CR>
+nnoremap <silent> gcu :CocCommand git.chunkUndo<CR>:call timer_start(50, {->execute('update')})<CR>
+" coc-snippets
+" 不要改动
+inoremap <silent><expr> <TAB>
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+let g:coc_snippet_next = '<tab>'
+" coc extensions
+let g:coc_global_extensions = [
+      \ 'coc-browser',
+      \ 'coc-css',
+      \ 'coc-diagnostic',
+      \ 'coc-dictionary',
+      \ 'coc-ecdict',
+      \ 'coc-emmet',
+      \ 'coc-emoji',
+      \ 'coc-eslint',
+      \ 'coc-explorer',
+      \ 'coc-floaterm',
+      \ 'coc-gist',
+      \ 'coc-git',
+      \ 'coc-highlight',
+      \ 'coc-html',
+      \ 'coc-json',
+      \ 'coc-just-complete',
+      \ 'coc-leetcode',
+      \ 'coc-lists',
+      \ 'coc-marketplace',
+      \ 'coc-pairs',
+      \ 'coc-prettier',
+      \ 'coc-pyright',
+      \ 'coc-python',
+      \ 'coc-syntax',
+      \ 'coc-snippets',
+      \ 'coc-tag',
+      \ 'coc-tasks',
+      \ 'coc-todolist',
+      \ 'coc-translator',
+      \ 'coc-tslint-plugin',
+      \ 'coc-tsserver',
+      \ 'coc-vimlsp',
+      \ 'coc-vimtex',
+      \ 'coc-word',
+      \ 'coc-yank'
+      \ ]
 
 
 " -----------------------------------------------------------------------------
@@ -808,9 +915,9 @@ let g:netrw_dirhistmax = 0
 " let g:netrw_home='~/.cache/vim'
 
 if g:islinux
-    let g:netrw_home=expand("$HOME/.cache/nerdtree")
+    let g:netrw_home=expand("$HOME/.cache/nerdtree_dir")
 else
-    let g:netrw_home=expand("$VIM/cache/nerdtree")
+    let g:netrw_home=expand("$VIM/cache/nerdtree_dir")
 endif
 
 " -----------------------------------------------------------------------------
@@ -845,12 +952,6 @@ let g:UltiSnipsEditSplit="vertical"
 "  UltiSnips使用的补全模板插件，配合UltiSnips使用，必须安装。
 "  具体配置查看vim-snippets目录下的UltiSnips目录中相应文件类型的配置文件。
 
-" -----------------------------------------------------------------------------
-"  < SrcExpl 插件配置 >
-" -----------------------------------------------------------------------------
-" 增强源代码浏览，其功能就像Windows中的"Source Insight"
-nmap <F3> :SrcExplToggle<CR>                "打开/闭浏览窗口
-
 
 " -----------------------------------------------------------------------------
 "  < surround 插件配置 >
@@ -858,31 +959,6 @@ nmap <F3> :SrcExplToggle<CR>                "打开/闭浏览窗口
 " 快速给单词/句子两边增加符号（包括html标签），缺点是不能用"."来重复命令
 " 不过 repeat 插件可以解决这个问题，详细帮助见 :h surround.txt
 
-" -----------------------------------------------------------------------------
-"  < Ale 插件配置 >
-" -----------------------------------------------------------------------------
-" 用于异步查检文件语法
-" let g:ale_sign_error = '¤'
-" let g:ale_sign_warning = '✗'
-"始终开启标志列
-" let g:ale_sign_column_always = 1
-" let g:ale_set_highlights = 0
-" "自定义error和warning图标
-" let g:ale_sign_error = '✗'
-" let g:ale_sign_warning = '⚡'
-" "在vim自带的状态栏中整合ale
-" let g:ale_statusline_format = ['✗ %d', '⚡ %d', '✔ OK']
-" "显示Linter名称,出错或警告等相关信息
-" let g:ale_echo_msg_error_str = 'E'
-" let g:ale_echo_msg_warning_str = 'W'
-" let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-" "普通模式下，sp前往上一个错误或警告，sn前往下一个错误或警告
-" nmap sp <Plug>(ale_previous_wrap)
-" nmap sn <Plug>(ale_next_wrap)
-" "<Leader>s触发/关闭语法检查
-" nmap <Leader>s :ALEToggle<CR>
-" "<Leader>d查看错误或警告的详细信息
-" nmap <Leader>d :ALEDetail<CR>
 
 " -----------------------------------------------------------------------------
 "  < Tagbar 插件配置 >
@@ -923,12 +999,6 @@ let g:mundo_preview_height     = 10
 let g:mundo_right              = 0
 let g:mundo_preview_bottom     = 1
 let g:mundo_auto_preview_delay = 10
-set undofile undolevels=1000
-if g:islinux
-    set undodir=$HOME/.cache/vim/undo
-else
-    set undodir=$VIM\cache\undo
-endif
 
 
 " -----------------------------------------------------------------------------
@@ -1080,9 +1150,9 @@ if executable('gtags-cscope') && executable('gtags')
 endif
 " 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
 if g:islinux
-    let s:vim_tags = expand('~/.cache/tags')
+    let s:vim_tags = expand('~/.cache/tags_dir')
 else
-    let s:vim_tags = expand('$VIM/cache/tags')
+    let s:vim_tags = expand('$VIM/cache/tags_dir')
 endif
 let g:gutentags_cache_dir = s:vim_tags
 " 检测 ~/.cache/tags 不存在就新建
@@ -1123,7 +1193,7 @@ let g:gutentags_auto_add_gtags_cscope = 0
 " -----------------------------------------------------------------------------
 " 符号索引配置
 " set tags=./.tags;,.tags
-set tags=./tags;,tags
+set tags=./tags,tags,.tags,.vim/tags,.vim/.tags tagfunc=CocTagFunc
 
 
 " -----------------------------------------------------------------------------
