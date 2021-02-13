@@ -235,7 +235,9 @@ set updatetime=100 timeout timeoutlen=500 ttimeout ttimeoutlen=50 nolazyredraw
 " -----------------------------------------------------------------------------
 "  < 声音告警配置 >
 " -----------------------------------------------------------------------------
-set noerrorbells novisualbell t_vb=
+" set noerrorbells visualbell t_vb=
+set vb t_vb=
+au GuiEnter * set t_vb=
 
 " -----------------------------------------------------------------------------
 "  < 补全配置 >
