@@ -74,7 +74,7 @@ set nocompatible                                      "禁用 Vi 兼容模式
 set fillchars=vert:\ ,stl:\ ,stlnc:\ |                " 修改分屏竖线样式为空格
 
 " -----------------------------------------------------------------------------
-"  < 新建文件自动插入文件头 >
+"  < 根据新建文件类型自动使用模板 >
 " -----------------------------------------------------------------------------
 augroup AutoTemplate
   autocmd!
@@ -82,8 +82,42 @@ augroup AutoTemplate
 augroup END
 
 
+" -----------------------------------------------------------------------------
+"  < 标志列高亮设置 >
+" -----------------------------------------------------------------------------
 
+augroup HlGroupSettings
+  autocmd!
+  autocmd ColorScheme * call s:OnColorSchemeLoaded()
+augroup END
+function! s:OnColorSchemeLoaded() abort
+  let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
+  if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
+  exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
+  exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
+  exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
+  exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
+  exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
+  exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
+  exe 'hi CursorLineNr          guibg='               . signcolumn_bg
 
+  hi VertSplit                  guifg=cyan
+  " hi CocFloating                guibg=blue
+  hi CursorLineNr               guifg=orange
+  " hi Normal                     guibg=#111111 guifg=#eeeeee
+  hi PmenuThumb                  guifg=white guibg=white
+  hi VisualNOS                  guibg=#404D3D
+
+  let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
+  exe 'hi EndOfBuffer           guifg=' . normal_bg
+
+  " coclist will(might) change my cursor highlight
+  hi Cursor gui=reverse guifg=NONE guibg=NONE
+endfunction
+call s:OnColorSchemeLoaded()
 
 
 
@@ -378,10 +412,10 @@ set nosplitbelow nosplitright nostartofline linespace=0 whichwrap=b,s scrolloff=
 set equalalways winfixwidth winfixheight winminwidth=3 winheight=3 winminheight=3
 " 终端设置
 set termguicolors cpoptions+=I  nowarn noconfirm
-" gui设置
-set guicursor=n-v-c-sm:block,i-ci-ve:block,r-cr-o:hor20
+" gui和win32控制台下光标样式设置
+set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 set go=                                               "不要图形按钮
-set guifont=Hack:h12                                  "设置字体:字号（字体名称空格用下划线代替）
+set guifont=Hack:h11                                  "设置字体:字号（字体名称空格用下划线代替）
 " set guifont=Monaco_for_Powerline:h11                  "设置字体:字号（字体名称空格用下划线代替）
 " set nowrap                                            "设置不自动换行
 set report=0                                          "命令行提示文件哪里被改动
@@ -398,7 +432,7 @@ endif
 " 设置 gVim 窗口初始位置及大小
 if g:isGUI
     " au GUIEnter * simalt ~x                           "窗口启动时自动最大化
-    winpos 100 10                                     "指定窗口出现的位置，坐标原点在屏幕左上角
+    winpos 200 30                                     "指定窗口出现的位置，坐标原点在屏幕左上角
     set lines=38 columns=120                          "指定窗口大小，lines为高度，columns为宽度
 endif
 
@@ -754,7 +788,6 @@ map <silent> <Space>F <Plug>(easymotion-bd-f)
 "  < indentLine 插件配置 >
 " -----------------------------------------------------------------------------
 " 用于显示对齐线，与 indent_guides 在显示方式上不同，根据自己喜好选择了
-" 在终端上会有屏幕刷新的问题，这个问题能解决有更好了
 let g:indentLine_char = '│'
 let g:indentLine_enabled = 1
 let g:indentLine_color_term = 238
@@ -838,6 +871,7 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 let g:coc_snippet_next = '<tab>'
+let g:coc_snippet_prev = '<S-Tab>'
 " coc extensions
 let g:coc_global_extensions = [
       \ 'coc-browser',
@@ -1118,15 +1152,15 @@ let g:repl_cursor_down = 1
 let g:repl_python_automerge = 1
 let g:repl_ipython_version = '7'
 let g:repl_output_copy_to_register = "t"
-nnoremap <leader>r :REPLToggle<Cr>
-nnoremap <leader>e :REPLSendSession<Cr>
+nnoremap <leader>pr :REPLToggle<Cr>
+nnoremap <leader>pe :REPLSendSession<Cr>
 autocmd Filetype python nnoremap <F12> <Esc>:REPLDebugStopAtCurrentLine<Cr> "设置断点
 autocmd Filetype python nnoremap <F10> <Esc>:REPLPDBN<Cr> "单行运行
 autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr> "单行运行可跳入
 let g:repl_position = 3                             "窗口位置，0底部，1顶部，2左边，3右边"
 " let g:repl_width = None                           "窗口宽度
 " let g:repl_height = None                          "窗口高度
-let g:sendtorepl_invoke_key = "<leader>w"          "传送代码快捷键，默认为<leader>w
+let g:sendtorepl_invoke_key = "<leader>pw"          "传送代码快捷键，默认为<leader>w
 let g:repl_position = 3                             "0表示出现在下方，1表示出现在上方，2在左边，3在右边
 let g:repl_stayatrepl_when_open = 0         "打开REPL时是回到原文件（1）还是停留在REPL窗口中（0）
 
