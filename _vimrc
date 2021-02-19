@@ -82,42 +82,6 @@ augroup AutoTemplate
 augroup END
 
 
-" -----------------------------------------------------------------------------
-"  < 标志列高亮设置 >
-" -----------------------------------------------------------------------------
-
-augroup HlGroupSettings
-  autocmd!
-  autocmd ColorScheme * call s:OnColorSchemeLoaded()
-augroup END
-function! s:OnColorSchemeLoaded() abort
-  let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
-  if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
-  exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
-  exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
-  exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
-  exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
-  exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
-  exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
-  exe 'hi CursorLineNr          guibg='               . signcolumn_bg
-
-  hi VertSplit                  guifg=cyan
-  " hi CocFloating                guibg=blue
-  hi CursorLineNr               guifg=orange
-  " hi Normal                     guibg=#111111 guifg=#eeeeee
-  hi PmenuThumb                  guifg=white guibg=white
-  hi VisualNOS                  guibg=#404D3D
-
-  let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
-  exe 'hi EndOfBuffer           guifg=' . normal_bg
-
-  " coclist will(might) change my cursor highlight
-  hi Cursor gui=reverse guifg=NONE guibg=NONE
-endfunction
-call s:OnColorSchemeLoaded()
 
 
 
@@ -149,8 +113,7 @@ Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'easymotion/vim-easymotion', {'on': ['<Plug>(easymotion-overwin-w)', '<Plug>(easymotion-bd-f)']}
 Plug 'mattn/emmet-vim', {'for': ['html','css']}
 Plug 'Yggdroot/indentLine'
-Plug 'vim-scripts/vim-javacompleteex', {'for': 'java'}
-Plug 'scrooloose/nerdcommenter'
+Plug 'tomtom/tcomment_vim'
 Plug 'scrooloose/nerdtree',  {'on': 'NERDTreeToggle'}
 Plug 'ryanoasis/vim-devicons'
 Plug 'preservim/tagbar'
@@ -416,7 +379,7 @@ set termguicolors cpoptions+=I  nowarn noconfirm
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 set go=                                               "不要图形按钮
 set guifont=Hack:h11                                  "设置字体:字号（字体名称空格用下划线代替）
-" set guifont=Monaco_for_Powerline:h11                  "设置字体:字号（字体名称空格用下划线代替）
+" set guifont=Monaco_Nerd_Font_Mono:h11                  "设置字体:字号（字体名称空格用下划线代替）
 " set nowrap                                            "设置不自动换行
 set report=0                                          "命令行提示文件哪里被改动
 set wrap wrapmargin=0                                 "设置自动换行
@@ -499,6 +462,40 @@ endfunction
 call NextColor()
 
 
+" 标志列高亮设置
+
+augroup HlGroupSettings
+  autocmd!
+  autocmd ColorScheme * call s:OnColorSchemeLoaded()
+augroup END
+function! s:OnColorSchemeLoaded() abort
+  let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
+  if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
+  exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
+  exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
+  exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
+  exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
+  exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
+  exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
+  exe 'hi CursorLineNr          guibg='               . signcolumn_bg
+
+  hi VertSplit                  guifg=cyan
+  " hi CocFloating                guibg=blue
+  hi CursorLineNr               guifg=orange
+  " hi Normal                     guibg=#111111 guifg=#eeeeee
+  hi PmenuThumb                  guifg=white guibg=white
+  hi VisualNOS                  guibg=#404D3D
+
+  let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
+  exe 'hi EndOfBuffer           guifg=' . normal_bg
+
+  " coclist will(might) change my cursor highlight
+  hi Cursor gui=reverse guifg=NONE guibg=NONE
+endfunction
+call s:OnColorSchemeLoaded()
 
 " 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 if g:isGUI
@@ -695,7 +692,7 @@ let g:rbpt_loadcmd_toggle = 0
 " <F5>: 刷新缓存
 
 " 设置快捷键
-" let g:Lf_ShortcutF = "<leader>fa"
+" let g:Lf_ShortcutF = "<leader>ff"
 noremap <silent> <leader>ff :<C-U><C-R>=printf("Leaderf file %s", "")<CR><CR>
 noremap <silent> <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <silent> <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
@@ -716,12 +713,12 @@ xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 " 支持function选项可以搜索python的class
 let g:Lf_CtagsFuncOpts = {"python": "--python-kinds=fmc --language-force=Python"}
 " 设置项目根目录标识
-let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
+let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git', '.idea']
 " 定义leaderf的工作目录
 let g:Lf_WorkingDirectoryMode = 'Ac'
 " 定义leader窗口的高度，小于1表示百分比
-let g:Lf_WindowHeight = 0.30
-" 不使用使用缓冲
+let g:Lf_WindowHeight = 0.4
+" 不使用缓存
 let g:Lf_UseCache = 0
 " 设置缓存目录
 if g:islinux
@@ -729,24 +726,55 @@ if g:islinux
 else
     let g:Lf_CacheDirectory = expand('$VIM/cache')
 endif
+" 设置为文件建立索引的最长时间
+let g:Lf_IndexTimeLimit       = 10
 " 显示相对路径
 let g:Lf_ShowRelativePath = 0
-" 颜色模板
-let g:Lf_StlColorscheme = 'powerline'
-" 在正常模式下不显示帮助
-let g:Lf_HideHelp = 1
-let g:Lf_UseVersionControlTool = 0
 " 忽略当前buff名称
 let g:Lf_IgnoreCurrentBufferName = 1
+" 在正常模式下不显示帮助
+let g:Lf_HideHelp = 1
+" 不希望leaderf记录的文件
+let g:Lf_MruFileExclude = ['*.so','*.py[c0]','*.exe','*.sw?']
 " popup mode
 " 使用弹出式窗口
 " let g:Lf_WindowPosition = 'popup'
 " 在弹出式窗口中预览
-" let g:Lf_PreviewInPopup = 1
-" 设置状态栏提示和字体
-let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+let g:Lf_PreviewInPopup = 1
 " 隐藏函数列表的预览功能
 let g:Lf_PreviewResult = {'Function':0, 'BufTag':0}
+" 控制栏颜色模板
+let g:Lf_StlColorscheme = 'powerline'
+" 设置状态栏提示和字体
+let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+" 不使用版本控制工具来索引
+let g:Lf_UseVersionControlTool = 0
+" 搜索隐藏文件
+let g:Lf_ShowHidden           = 1
+" 屏蔽部分目录和扩展名的文件的搜
+let g:Lf_WildIgnore = {
+  \ 'dir': [
+    \ '.svn',
+    \ '.git',
+    \ '.hg',
+    \ '.cache',
+    \ '.idea',
+    \ '.ccls-cache',
+    \ '.android',
+    \ '.gradle',
+    \ '.IntelliJIdea*',
+    \ 'node_modules',
+    \ 'build'
+  \ ],
+  \ 'file': [
+    \ '*.sw?',
+    \ '~$*',
+    \ '*.exe',
+    \ '*.o',
+    \ '*.so',
+    \ '*.py[co]'
+  \ ]
+\ }
 " 使用ESC键退出函数列表
 let g:Lf_NormalMap = {
             \ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
@@ -803,11 +831,6 @@ let g:indentLine_fileTypeExclude = [
       \ 'translator',
       \ 'vista',
       \ ]
-
-" -----------------------------------------------------------------------------
-"  < vim-javacompleteex（也就是 javacomplete 增强版）插件配置 >
-" -----------------------------------------------------------------------------
-" java 补全插件
 
 
 " -----------------------------------------------------------------------------
@@ -922,19 +945,13 @@ noremap <c-p> :Autoformat<cr>
 " let g:autoformat_retab = 0
 " let g:autoformat_remove_trailing_spaces = 0
 
-" -----------------------------------------------------------------------------
-"  < nerdcommenter 插件配置 >
-" -----------------------------------------------------------------------------
-" 我主要用于C/C++代码注释(其它的也行)
-" 以下为插件默认快捷键，其中的说明是以C/C++为例的，其它语言类似
-" <Leader>ci 以每行一个 /* */ 注释选中行(选中区域所在行)，再输入则取消注释
-" <Leader>cm 以一个 /* */ 注释选中行(选中区域所在行)，再输入则称重复注释
-" <Leader>cc 以每行一个 /* */ 注释选中行或区域，再输入则称重复注释
-" <Leader>cu 取消选中区域(行)的注释，选中区域(行)内至少有一个 /* */
-" <Leader>ca 在/*...*/与//这两种注释方式中切换（其它语言可能不一样了）
-" <Leader>cA 行尾注释
-let NERDSpaceDelims = 1                     "在左注释符之后，右注释符之前留有空格
 
+" -----------------------------------------------------------------------------
+"  < tcomment_vim 插件配置 >
+" -----------------------------------------------------------------------------
+let g:tcomment_types = {'c': '// %s'}
+nnoremap <silent> gC vil:TCommentInline<CR>
+vnoremap <silent> gC :TCommentBlock<CR>
 " -----------------------------------------------------------------------------
 "  < nerdtree 插件配置 >
 " -----------------------------------------------------------------------------
