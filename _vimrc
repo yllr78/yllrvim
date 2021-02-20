@@ -82,8 +82,42 @@ augroup AutoTemplate
 augroup END
 
 
+" -----------------------------------------------------------------------------
+"  < 标志列高亮设置 >
+" -----------------------------------------------------------------------------
 
+augroup HlGroupSettings
+  autocmd!
+  autocmd ColorScheme * call s:OnColorSchemeLoaded()
+augroup END
+function! s:OnColorSchemeLoaded() abort
+  let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
+  if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
+  exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
+  exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
+  exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
+  exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
+  exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
+  exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
+  exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
+  exe 'hi CursorLineNr          guibg='               . signcolumn_bg
 
+  hi VertSplit                  guifg=cyan
+  " hi CocFloating                guibg=blue
+  hi CursorLineNr               guifg=orange
+  " hi Normal                     guibg=#111111 guifg=#eeeeee
+  hi PmenuThumb                  guifg=white guibg=white
+  hi VisualNOS                  guibg=#404D3D
+
+  let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
+  exe 'hi EndOfBuffer           guifg=' . normal_bg
+
+  " coclist will(might) change my cursor highlight
+  hi Cursor gui=reverse guifg=NONE guibg=NONE
+endfunction
+call s:OnColorSchemeLoaded()
 
 " -----------------------------------------------------------------------------
 "  < Vim-plug 插件管理工具配置 >
@@ -379,7 +413,11 @@ set termguicolors cpoptions+=I  nowarn noconfirm
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 set go=                                               "不要图形按钮
 set guifont=Hack:h11                                  "设置字体:字号（字体名称空格用下划线代替）
+<<<<<<< HEAD
 " set guifont=Monaco_Nerd_Font_Mono:h11                  "设置字体:字号（字体名称空格用下划线代替）
+=======
+" set guifont=Monaco_for_Powerline:h11                  "设置字体:字号（字体名称空格用下划线代替）
+>>>>>>> 8e7405f4f5fe185b148c97c639a0d2f1d77910e6
 " set nowrap                                            "设置不自动换行
 set report=0                                          "命令行提示文件哪里被改动
 set wrap wrapmargin=0                                 "设置自动换行
