@@ -49,8 +49,8 @@ if (g:iswindows && g:isGUI)
         let eq = ''
         if $VIMRUNTIME =~ ' '
             " if &sh =~ '\<cmd'
-                " let cmd = '""' . $VIMRUNTIME . '\diff"'
-                " let eq = '"'
+            " let cmd = '""' . $VIMRUNTIME . '\diff"'
+            " let eq = '"'
             if &sh =~ '\<cmd'
                 let cmd = '"' . $VIMRUNTIME . '\diff"'
                 let eq = '""'
@@ -77,47 +77,13 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\ |                " 修改分屏竖线样式
 "  < 根据新建文件类型自动使用模板 >
 " -----------------------------------------------------------------------------
 augroup AutoTemplate
-  autocmd!
-  autocmd BufNewFile .gitignore,.npmignore,.tasks,.clang-format,Solution.cpp Template
+    autocmd!
+    autocmd BufNewFile .gitignore,.npmignore,.tasks,.clang-format,Solution.cpp Template
 augroup END
 
 
-" -----------------------------------------------------------------------------
-"  < 标志列高亮设置 >
-" -----------------------------------------------------------------------------
 
-augroup HlGroupSettings
-  autocmd!
-  autocmd ColorScheme * call s:OnColorSchemeLoaded()
-augroup END
-function! s:OnColorSchemeLoaded() abort
-  let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
-  if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
-  exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
-  exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
-  exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
-  exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
-  exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
-  exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
-  exe 'hi CursorLineNr          guibg='               . signcolumn_bg
 
-  hi VertSplit                  guifg=cyan
-  " hi CocFloating                guibg=blue
-  hi CursorLineNr               guifg=orange
-  " hi Normal                     guibg=#111111 guifg=#eeeeee
-  hi PmenuThumb                  guifg=white guibg=white
-  hi VisualNOS                  guibg=#404D3D
-
-  let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
-  exe 'hi EndOfBuffer           guifg=' . normal_bg
-
-  " coclist will(might) change my cursor highlight
-  hi Cursor gui=reverse guifg=NONE guibg=NONE
-endfunction
-call s:OnColorSchemeLoaded()
 
 " -----------------------------------------------------------------------------
 "  < Vim-plug 插件管理工具配置 >
@@ -156,7 +122,7 @@ Plug 'simnalamburt/vim-mundo', {'on': 'MundoToggle'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Chiel92/vim-autoformat'
 Plug 'vim-scripts/repeat.vim'
-Plug 'SirVer/ultisnips'
+" Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'tpope/vim-surround'
 Plug 'vim-scripts/ZoomWin'
@@ -171,11 +137,6 @@ Plug 'voldikss/vim-floaterm'
 Plug 'sillybun/vim-repl', {'on': ['REPLToggle', 'REPLDebugStopAtCurrentLine']}
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'tpope/vim-fugitive', {'on': ['Gw', 'Gc', 'Gcommit', 'G']}
-if has('nvim') || has('patch-8.0.902')
-    Plug 'mhinz/vim-signify'
-else
-    Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
-endif
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 " --------------以下为配色相关插件-------------
@@ -240,9 +201,9 @@ set history=10000 noswapfile
 " 自动拼写检查设置
 set nospell
 " if g:islinux
-    " set spellfile=$HOME/.vim/spell/en.utf-8.add
+" set spellfile=$HOME/.vim/spell/en.utf-8.add
 " else
-    " set spellfile=$VIMRUNTIME\spell\en.utf-8.add  "有错，待解决
+" set spellfile=$VIMRUNTIME\spell\en.utf-8.add  "有错，待解决
 " endif
 "  禁止自动生成备份文件
 set nobackup nowritebackup
@@ -319,6 +280,7 @@ au BufRead,BufNewFile * setfiletype txt                "高亮txt文件
 set autoread                                           "当文件在外部被修改，自动更新该文件
 set autowrite                                          "自动保存文件
 set hidden                                             "支持未保存的缓冲区跳转
+set formatoptions-=cro                                 "下一行不自动加上注释
 
 
 " 用空格键来开关折叠
@@ -389,6 +351,11 @@ au BufWinEnter * let w:m2=matchadd('Underlined', '\%>' . 80 . 'v.\+', -1)
 " -----------------------------------------------------------------------------
 "  < 界面配置 >
 " -----------------------------------------------------------------------------
+"  支持simple terminal终端正确显示颜色
+if g:islinux
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
 set number relativenumber                             "显示行号和相对行号
 set noshowcmd ruler rulerformat= laststatus=2         "不显示输入的命令和状态栏标尺
 set display=lastline,uhex                             "显示设置
@@ -413,21 +380,17 @@ set termguicolors cpoptions+=I  nowarn noconfirm
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 set go=                                               "不要图形按钮
 set guifont=Hack:h11                                  "设置字体:字号（字体名称空格用下划线代替）
-<<<<<<< HEAD
 " set guifont=Monaco_Nerd_Font_Mono:h11                  "设置字体:字号（字体名称空格用下划线代替）
-=======
-" set guifont=Monaco_for_Powerline:h11                  "设置字体:字号（字体名称空格用下划线代替）
->>>>>>> 8e7405f4f5fe185b148c97c639a0d2f1d77910e6
 " set nowrap                                            "设置不自动换行
 set report=0                                          "命令行提示文件哪里被改动
 set wrap wrapmargin=0                                 "设置自动换行
 set shortmess+=I                                      "去掉欢迎界面
 " 显示标号栏
 if has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
+    " Recently vim can merge signcolumn and number column into one
+    set signcolumn=number
 else
-  set signcolumn=yes
+    set signcolumn=yes
 endif
 " set listchars=tab:▶\ ,eol:¬,trail:·,extends:>,precedes:<     "显示不可见字符
 " 设置 gVim 窗口初始位置及大小
@@ -439,33 +402,33 @@ endif
 
 " 设置代码配色方案
 " if g:isGUI
-    " colorscheme Tomorrow-Night-Eighties               "Gvim配色方案
-    " colorscheme molokai
-    " colorscheme solarized
-    " set background=dark
-    " set background=light
-    " ---------ayu-------------
-    " let ayucolor="light"  " for light version of theme
-    " let ayucolor="mirage" " for mirage version of theme
-    " let ayucolor="dark"   " for dark version of theme
-    " colorscheme ayu
-    " ---------github-------------
-    " colorscheme github
-    " let g:github_colors_soft = 1
+" colorscheme Tomorrow-Night-Eighties               "Gvim配色方案
+" colorscheme molokai
+" colorscheme solarized
+" set background=dark
+" set background=light
+" ---------ayu-------------
+" let ayucolor="light"  " for light version of theme
+" let ayucolor="mirage" " for mirage version of theme
+" let ayucolor="dark"   " for dark version of theme
+" colorscheme ayu
+" ---------github-------------
+" colorscheme github
+" let g:github_colors_soft = 1
 " else
-    " colorscheme Tomorrow-Night-Eighties               "终端配色方案
-    " colorscheme molokai
-    " colorscheme solarized
-    " set background=dark
-    " set background=light
-    " ---------ayu-------------
-    " let ayucolor="light"  " for light version of theme
-    " let ayucolor="mirage" " for mirage version of theme
-    " let ayucolor="dark"   " for dark version of theme
-    " colorscheme ayu
-    " ---------github-------------
-    " colorscheme github
-    " let g:github_colors_soft = 1
+" colorscheme Tomorrow-Night-Eighties               "终端配色方案
+" colorscheme molokai
+" colorscheme solarized
+" set background=dark
+" set background=light
+" ---------ayu-------------
+" let ayucolor="light"  " for light version of theme
+" let ayucolor="mirage" " for mirage version of theme
+" let ayucolor="dark"   " for dark version of theme
+" colorscheme ayu
+" ---------github-------------
+" colorscheme github
+" let g:github_colors_soft = 1
 " endif
 
 " 每次打开vim自动切换配色方案
@@ -493,7 +456,7 @@ function NextColor()
             execute 'colorscheme ' .s:termcolor[curcolor]
             execute 'syntax sync fromstart'
         endif
-        catch
+    catch
     endtry
 endfunction
 
@@ -503,35 +466,35 @@ call NextColor()
 " 标志列高亮设置
 
 augroup HlGroupSettings
-  autocmd!
-  autocmd ColorScheme * call s:OnColorSchemeLoaded()
+    autocmd!
+    autocmd ColorScheme * call s:OnColorSchemeLoaded()
 augroup END
 function! s:OnColorSchemeLoaded() abort
-  let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
-  if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
-  exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
-  exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
-  exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
-  exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
-  exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
-  exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
-  exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
-  exe 'hi CursorLineNr          guibg='               . signcolumn_bg
+    let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
+    if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
+    exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
+    exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
+    exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
+    exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
+    exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
+    exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
+    exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
+    exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
+    exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
+    exe 'hi CursorLineNr          guibg='               . signcolumn_bg
 
-  hi VertSplit                  guifg=cyan
-  " hi CocFloating                guibg=blue
-  hi CursorLineNr               guifg=orange
-  " hi Normal                     guibg=#111111 guifg=#eeeeee
-  hi PmenuThumb                  guifg=white guibg=white
-  hi VisualNOS                  guibg=#404D3D
+    hi VertSplit                  guifg=cyan
+    " hi CocFloating                guibg=blue
+    hi CursorLineNr               guifg=orange
+    " hi Normal                     guibg=#111111 guifg=#eeeeee
+    hi PmenuThumb                  guifg=white guibg=white
+    hi VisualNOS                  guibg=#404D3D
 
-  let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
-  exe 'hi EndOfBuffer           guifg=' . normal_bg
+    let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
+    exe 'hi EndOfBuffer           guifg=' . normal_bg
 
-  " coclist will(might) change my cursor highlight
-  hi Cursor gui=reverse guifg=NONE guibg=NONE
+    " coclist will(might) change my cursor highlight
+    hi Cursor gui=reverse guifg=NONE guibg=NONE
 endfunction
 call s:OnColorSchemeLoaded()
 
@@ -578,6 +541,62 @@ set wildignore+=*.msi,*.crx,*.deb,*.vfd,*.apk,*.ipa,*.bin,*.msu
 set wildignore+=*.gba,*.sfc,*.078,*.nds,*.smd,*.smc
 set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
 
+
+" -----------------------------------------------------------------------------
+"  < 命令缩写 >
+" -----------------------------------------------------------------------------
+
+function! s:SetCommandAbbrs(from, to)
+    exec 'cnoreabbrev <expr> '.a:from
+                \ .' ((getcmdtype() ==# ":" && getcmdline() ==# "'.a:from.'")'
+                \ .'? ("'.a:to.'") : ("'.a:from.'"))'
+endfunc
+call s:SetCommandAbbrs('ar', 'AsyncRun')
+call s:SetCommandAbbrs('as', 'AsyncStop')
+call s:SetCommandAbbrs('at', 'AsyncTask')
+call s:SetCommandAbbrs('b', 'BClose')
+call s:SetCommandAbbrs('ca', 'CocAction')
+call s:SetCommandAbbrs('cc', 'CocConfig')
+call s:SetCommandAbbrs('Cd', 'CdRoot')
+call s:SetCommandAbbrs('cf', 'CocFix')
+call s:SetCommandAbbrs('ci', 'CocInstall')
+call s:SetCommandAbbrs('cl', 'CocList')
+call s:SetCommandAbbrs('cm', 'CocCommand')
+call s:SetCommandAbbrs('cr', 'silent CocRestart')
+call s:SetCommandAbbrs('cs', 'CocSearch')
+call s:SetCommandAbbrs('cu', 'CocUninstall')
+call s:SetCommandAbbrs('cup', 'CocUpdate')
+call s:SetCommandAbbrs('fk', 'FloatermKill')
+call s:SetCommandAbbrs('f', 'FloatermNew')
+call s:SetCommandAbbrs('F', 'FloatermNew')
+call s:SetCommandAbbrs('fn', 'FloatermNew')
+call s:SetCommandAbbrs('Fn', 'FloatermNew')
+call s:SetCommandAbbrs('fs', 'FloatermSend')
+call s:SetCommandAbbrs('ft', 'FloatermToggle')
+call s:SetCommandAbbrs('fu', 'FloatermUpdate')
+call s:SetCommandAbbrs('gap', 'Git add -p')
+call s:SetCommandAbbrs('gc', 'Git commit -v')
+call s:SetCommandAbbrs('gca', 'Git commit --amend -v')
+call s:SetCommandAbbrs('gco', 'AsyncRun git checkout .')
+call s:SetCommandAbbrs('gd', 'Gvdiff')
+call s:SetCommandAbbrs('gl', 'Git lg')
+call s:SetCommandAbbrs('gpull', 'AsyncRun git pull')
+call s:SetCommandAbbrs('gp', 'AsyncRun -silent git push')
+call s:SetCommandAbbrs('Gpush', 'AsyncRun -silent git push')
+call s:SetCommandAbbrs('gs', 'Gstatus')
+call s:SetCommandAbbrs('l', 'Leaderf')
+call s:SetCommandAbbrs('m', 'Messages')
+call s:SetCommandAbbrs('man', 'vertical Man')
+call s:SetCommandAbbrs('pc', 'PlugClean')
+call s:SetCommandAbbrs('pi', 'PlugInstall')
+call s:SetCommandAbbrs('pu', 'PlugUpdate')
+call s:SetCommandAbbrs('rn', 'Rename')
+call s:SetCommandAbbrs('rm', 'Remove')
+call s:SetCommandAbbrs('sl', 'CocCommand session.load default')
+call s:SetCommandAbbrs('ss', 'CocCommand session.save default')
+call s:SetCommandAbbrs('st', 'Startify')
+call s:SetCommandAbbrs('t', 'Template')
+call s:SetCommandAbbrs('W', '%!sudo tee >/dev/null %')
 " =============================================================================
 "                          << 以下为常用插件配置 >>
 " =============================================================================
@@ -588,38 +607,53 @@ set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
 " -----------------------------------------------------------------------------
 " 轻量级状态栏插件，更好的状态栏效果
 let g:lightline = {
-  \ 'colorscheme': 'darcula',
-  \ 'active': {
-    \ 'left': [
-      \ ['mode', 'paste'],
-      \ ['fugitive', 'readonly', 'filename', 'Modifyed']
-    \ ],
-    \ 'right': [
-      \ ['asyncrun_status'],
-      \ ['lineinfo'],
-      \ ['percent'],
-      \ ['fileformat', 'fileencoding'],
-      \ ['filetype']
-    \ ]
-  \ },
-  \ 'inactive': {
-    \ 'left': [['inactive_fileinfo']],
-    \ 'right': []
-  \ },
-  \ 'tabline': {
-    \ 'left': [['vim_logo', 'buffers']],
-    \ 'right': [['close']]
-  \ },
-  \ 'component': {
-    \ 'lineinfo': ' %l,%-v',
-    \ 'percent': '%p%%',
-    \ 'close': '%{has("nvim") ? " NVIM " : " VIM "}',
-    \ 'vim_logo': "#"
-  \ },
-  \ 'component_expand': { 'buffers': 'lightline#bufferline#buffers' },
-  \ 'component_type': { 'buffers': 'tabsel' }
-\ }
+            \ 'colorscheme': 'dracula',
+            \ 'active': {
+            \ 'left': [
+            \ ['mode', 'paste'],
+            \ ['fugitive', 'readonly', 'filename', 'Modifyed']
+            \ ],
+            \ 'right': [
+            \ ['asyncrun_status'],
+            \ ['lineinfo'],
+            \ ['percent'],
+            \ ['fileformat', 'fileencoding'],
+            \ ['filetype']
+            \ ]
+            \ },
+            \ 'inactive': {
+            \ 'left': [['inactive_fileinfo']],
+            \ 'right': []
+            \ },
+            \ 'tabline': {
+            \ 'left': [['vim_logo', 'buffers']],
+            \ 'right': [['close']],
+            \ 'subseparator': {
+            \ 'left': '│',
+            \ 'right': '│'
+            \ }
+            \ },
+            \ 'component': {
+            \ 'lineinfo': ' %l,%-v',
+            \ 'percent': '%p%%',
+            \ 'close': '%{has("nvim") ? " NVIM " : " VIM "}',
+            \ 'vim_logo': "#"
+            \ },
+            \ 'component_function': {
+              \ 'fugitive': 'FugitiveHead'
+             \},
+            \ 'component_expand': { 'buffers': 'lightline#bufferline#buffers' },
+            \ 'component_type': { 'buffers': 'tabsel' },
+            \ 'subseparator': {
+            \ 'left': '│',
+            \ 'right': '│'
+            \ }
+            \ }
 
+" \ 'component_function':
+"   {
+"   \ 'fugitive': 'fn#lightline#GitBranch'
+"  \},
 " -----------------------------------------------------------------------------
 "  <lightline-bufferline 插件配置 >
 " -----------------------------------------------------------------------------
@@ -631,9 +665,9 @@ let g:lightline#bufferline#enable_devicons = 1
 let g:lightline#bufferline#unicode_symbols = 1
 let g:lightline#bufferline#show_number  = 3
 let g:lightline#bufferline#number_map = {
-      \ 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴',
-      \ 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'
-      \ }
+            \ 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴',
+            \ 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'
+            \ }
 nmap <Leader>1 <Plug>lightline#bufferline#go(1)
 nmap <Leader>2 <Plug>lightline#bufferline#go(2)
 nmap <Leader>3 <Plug>lightline#bufferline#go(3)
@@ -688,23 +722,23 @@ au! BufRead,BufNewFile,BufEnter *.{c,cpp,h,py,lua,java,javascript} call CSyntaxA
 " -----------------------------------------------------------------------------
 " 给括号增加颜色
 let g:rbpt_colorpairs = [
-    \ ['brown',       'RoyalBlue3'],
-    \ ['Darkblue',    'SeaGreen3'],
-    \ ['darkgray',    'DarkOrchid3'],
-    \ ['darkgreen',   'firebrick3'],
-    \ ['darkcyan',    'RoyalBlue3'],
-    \ ['darkred',     'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['brown',       'firebrick3'],
-    \ ['gray',        'RoyalBlue3'],
-    \ ['black',       'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['Darkblue',    'firebrick3'],
-    \ ['darkgreen',   'RoyalBlue3'],
-    \ ['darkcyan',    'SeaGreen3'],
-    \ ['darkred',     'DarkOrchid3'],
-    \ ['red',         'firebrick3'],
-    \ ]
+            \ ['brown',       'RoyalBlue3'],
+            \ ['Darkblue',    'SeaGreen3'],
+            \ ['darkgray',    'DarkOrchid3'],
+            \ ['darkgreen',   'firebrick3'],
+            \ ['darkcyan',    'RoyalBlue3'],
+            \ ['darkred',     'SeaGreen3'],
+            \ ['darkmagenta', 'DarkOrchid3'],
+            \ ['brown',       'firebrick3'],
+            \ ['gray',        'RoyalBlue3'],
+            \ ['black',       'SeaGreen3'],
+            \ ['darkmagenta', 'DarkOrchid3'],
+            \ ['Darkblue',    'firebrick3'],
+            \ ['darkgreen',   'RoyalBlue3'],
+            \ ['darkcyan',    'SeaGreen3'],
+            \ ['darkred',     'DarkOrchid3'],
+            \ ['red',         'firebrick3'],
+            \ ]
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
 " -----------------------------------------------------------------------------
@@ -791,28 +825,28 @@ let g:Lf_UseVersionControlTool = 0
 let g:Lf_ShowHidden           = 1
 " 屏蔽部分目录和扩展名的文件的搜
 let g:Lf_WildIgnore = {
-  \ 'dir': [
-    \ '.svn',
-    \ '.git',
-    \ '.hg',
-    \ '.cache',
-    \ '.idea',
-    \ '.ccls-cache',
-    \ '.android',
-    \ '.gradle',
-    \ '.IntelliJIdea*',
-    \ 'node_modules',
-    \ 'build'
-  \ ],
-  \ 'file': [
-    \ '*.sw?',
-    \ '~$*',
-    \ '*.exe',
-    \ '*.o',
-    \ '*.so',
-    \ '*.py[co]'
-  \ ]
-\ }
+            \ 'dir': [
+            \ '.svn',
+            \ '.git',
+            \ '.hg',
+            \ '.cache',
+            \ '.idea',
+            \ '.ccls-cache',
+            \ '.android',
+            \ '.gradle',
+            \ '.IntelliJIdea*',
+            \ 'node_modules',
+            \ 'build'
+            \ ],
+            \ 'file': [
+            \ '*.sw?',
+            \ '~$*',
+            \ '*.exe',
+            \ '*.o',
+            \ '*.so',
+            \ '*.py[co]'
+            \ ]
+            \ }
 " 使用ESC键退出函数列表
 let g:Lf_NormalMap = {
             \ "File":   [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
@@ -839,13 +873,6 @@ map <silent> <Space>F <Plug>(easymotion-bd-f)
 
 
 " -----------------------------------------------------------------------------
-"  <  vim-signify插件配置 >
-" -----------------------------------------------------------------------------
-"  在屏幕左侧显示Git变更的支持插件
-"  自动更新频率设置
-
-
-" -----------------------------------------------------------------------------
 "  < emmet-vim（前身为Zen coding） 插件配置 >
 " -----------------------------------------------------------------------------
 " HTML/CSS代码快速编写神器
@@ -858,17 +885,17 @@ let g:indentLine_char = '│'
 let g:indentLine_enabled = 1
 let g:indentLine_color_term = 238
 let g:indentLine_fileTypeExclude = [
-      \ 'coc-explorer',
-      \ 'codi',
-      \ 'floaterm',
-      \ 'help',
-      \ 'json',
-      \ 'jsonc',
-      \ 'man',
-      \ 'startify',
-      \ 'translator',
-      \ 'vista',
-      \ ]
+            \ 'coc-explorer',
+            \ 'codi',
+            \ 'floaterm',
+            \ 'help',
+            \ 'json',
+            \ 'jsonc',
+            \ 'man',
+            \ 'startify',
+            \ 'translator',
+            \ 'vista',
+            \ ]
 
 
 " -----------------------------------------------------------------------------
@@ -882,26 +909,28 @@ endif
 nnoremap <silent><nowait> <C-b> :call fn#keymap#n#scroll_win(0)<CR>
 nnoremap <silent><nowait> <C-f> :call fn#keymap#n#scroll_win(1)<CR>
 inoremap <silent><nowait><expr> <C-f>
-      \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" :
-      \ "<C-r>=fn#keymap#exec('normal! w')<CR>"
+            \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" :
+            \ "<C-r>=fn#keymap#exec('normal! w')<CR>"
 inoremap <silent><nowait><expr> <C-b>
-      \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" :
-      \ "<C-r>=fn#keymap#exec('normal! b')<CR>"
+            \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" :
+            \ "<C-r>=fn#keymap#exec('normal! b')<CR>"
 nnoremap <expr> <silent> <C-c> <SID>select_current_word_and_go_next()
 function! s:select_current_word_and_go_next()
-  if !get(g:, 'coc_cursors_activated', 0)
-    return "\<Plug>(coc-cursors-word)"
-  endif
-  " based on coc readme, this has been modified
-  " because I have mapped * to m`:keepjumps normal! *``zz<cr>
-  return "*n\<Plug>(coc-cursors-word):nohlsearch\<CR>"
+    if !get(g:, 'coc_cursors_activated', 0)
+        return "\<Plug>(coc-cursors-word)"
+    endif
+    " based on coc readme, this has been modified
+    " because I have mapped * to m`:keepjumps normal! *``zz<cr>
+    return "*n\<Plug>(coc-cursors-word):nohlsearch\<CR>"
 endfunc
-nmap     <silent> <M-n>      <Plug>(coc-diagnostic-next)
-nmap     <silent> <M-p>      <Plug>(coc-diagnostic-prev)
+
+nmap     <silent> [g      <Plug>(coc-diagnostic-next)
+nmap     <silent> ]g      <Plug>(coc-diagnostic-prev)
 nnoremap <silent> cl         :<C-u>CocList<CR>
 nnoremap <silent> <Leader>cs :<C-u>CocSearch <C-r><C-w><CR>
 nmap     <silent> <Leader>cf <Plug>(coc-fix-current)
 nmap     <silent> <Leader>cd <Plug>(coc-definition)
+nmap     <silent> <Leader>cy <Plug>(coc-type-definition)
 nmap     <silent> <Leader>cr <Plug>(coc-refactor)
 nmap     <silent> <Leader>ci <Plug>(coc-implementation)
 nmap     <silent> <Leader>rn <Plug>(coc-rename)
@@ -924,53 +953,63 @@ nnoremap <silent> gcu :CocCommand git.chunkUndo<CR>:call timer_start(50, {->exec
 " coc-snippets
 " 不要改动
 inoremap <silent><expr> <TAB>
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+            \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+            \ <SID>check_back_space() ? "\<TAB>" :
+            \ coc#refresh()
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 let g:coc_snippet_next = '<tab>'
 let g:coc_snippet_prev = '<S-Tab>'
+" coc-translator
+" popup
+nmap <Leader>t <Plug>(coc-translator-p)
+vmap <Leader>t <Plug>(coc-translator-pv)
+" echo
+nmap <Leader>e <Plug>(coc-translator-e)
+vmap <Leader>e <Plug>(coc-translator-ev)
+" replace
+nmap <Leader>r <Plug>(coc-translator-r)
+vmap <Leader>r <Plug>(coc-translator-rv)
 " coc extensions
 let g:coc_global_extensions = [
-      \ 'coc-browser',
-      \ 'coc-css',
-      \ 'coc-diagnostic',
-      \ 'coc-dictionary',
-      \ 'coc-ecdict',
-      \ 'coc-emmet',
-      \ 'coc-emoji',
-      \ 'coc-eslint',
-      \ 'coc-explorer',
-      \ 'coc-floaterm',
-      \ 'coc-gist',
-      \ 'coc-git',
-      \ 'coc-highlight',
-      \ 'coc-html',
-      \ 'coc-json',
-      \ 'coc-just-complete',
-      \ 'coc-leetcode',
-      \ 'coc-lists',
-      \ 'coc-marketplace',
-      \ 'coc-pairs',
-      \ 'coc-prettier',
-      \ 'coc-pyright',
-      \ 'coc-python',
-      \ 'coc-syntax',
-      \ 'coc-snippets',
-      \ 'coc-tag',
-      \ 'coc-tasks',
-      \ 'coc-todolist',
-      \ 'coc-translator',
-      \ 'coc-tslint-plugin',
-      \ 'coc-tsserver',
-      \ 'coc-vimlsp',
-      \ 'coc-vimtex',
-      \ 'coc-word',
-      \ 'coc-yank'
-      \ ]
+            \ 'coc-browser',
+            \ 'coc-css',
+            \ 'coc-diagnostic',
+            \ 'coc-dictionary',
+            \ 'coc-ecdict',
+            \ 'coc-emmet',
+            \ 'coc-emoji',
+            \ 'coc-eslint',
+            \ 'coc-explorer',
+            \ 'coc-floaterm',
+            \ 'coc-gist',
+            \ 'coc-git',
+            \ 'coc-highlight',
+            \ 'coc-html',
+            \ 'coc-json',
+            \ 'coc-just-complete',
+            \ 'coc-leetcode',
+            \ 'coc-lists',
+            \ 'coc-marketplace',
+            \ 'coc-pairs',
+            \ 'coc-prettier',
+            \ 'coc-pyright',
+            \ 'coc-python',
+            \ 'coc-syntax',
+            \ 'coc-snippets',
+            \ 'coc-tag',
+            \ 'coc-tasks',
+            \ 'coc-todolist',
+            \ 'coc-translator',
+            \ 'coc-tslint-plugin',
+            \ 'coc-tsserver',
+            \ 'coc-vimlsp',
+            \ 'coc-vimtex',
+            \ 'coc-word',
+            \ 'coc-yank'
+            \ ]
 
 
 " -----------------------------------------------------------------------------
@@ -1030,10 +1069,10 @@ endif
 " 用于各种代码补全，这种补全是一种对代码中的词与代码块的缩写补全，详细用法可以参
 " 考使用说明或网络教程等。不过有时候也会与 supertab 插件在补全时产生冲突，如果大
 " 侠有什么其它解决方法希望不要保留呀
-let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsExpandTrigger="<tab>"
 " 使用 tab 切换下一个触发点，shit+tab 上一个触发点
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+" let g:UltiSnipsJumpForwardTrigger="<tab>"
+" let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 " 使用 UltiSnipsEdit 命令时垂直分割屏幕
 let g:UltiSnipsEditSplit="vertical"
 
@@ -1098,9 +1137,9 @@ let g:mundo_auto_preview_delay = 10
 " 根据文件类型自动将字典文件添加到当前缓冲区
 " 添加其他字典文件夹
 " let g:vim_dict_dict = [
-    " \ '~/.vim/dict',
-    " \ '~/.config/nvim/dict',
-    " \ ]
+" \ '~/.vim/dict',
+" \ '~/.config/nvim/dict',
+" \ ]
 " 文件类型覆盖
 let g:vim_dict_config = {'html':'html,javascript,css', 'markdown':'text'}
 " 禁用某些文件类型
@@ -1156,6 +1195,7 @@ noremap <silent><f8> :AsyncTask project-run<cr>
 noremap <silent><f7> :AsyncTask project-build<cr>
 " 内置终端位置设置
 let g:asynctasks_term_pos = 'bottom'
+
 
 " -----------------------------------------------------------------------------
 "  < vim-floaterm 插件配置 >
@@ -1234,19 +1274,19 @@ let g:gutentags_ctags_tagfile = 'tags'
 "同时开启ctags和gtags支持
 let g:gutentags_modules = []
 if executable('ctags')
-	let g:gutentags_modules += ['ctags']
+    let g:gutentags_modules += ['ctags']
 endif
 if executable('gtags-cscope') && executable('gtags')
-	let g:gutentags_modules += ['gtags_cscope']
+    let g:gutentags_modules += ['gtags_cscope']
 endif
-" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags_dir 目录中，避免污染工程目录
 if g:islinux
     let s:vim_tags = expand('~/.cache/tags_dir')
 else
     let s:vim_tags = expand('$VIM/cache/tags_dir')
 endif
 let g:gutentags_cache_dir = s:vim_tags
-" 检测 ~/.cache/tags 不存在就新建
+" 检测 ~/.cache/tags_dir 不存在就新建
 if !isdirectory(s:vim_tags)
     silent! call mkdir(s:vim_tags, 'p')
 endif
@@ -1567,5 +1607,5 @@ if (g:iswindows && g:isGUI)
     "快捷键设置
     map <c-up> :call Alpha_add()<CR>
     map <c-down> :call Alpha_sub()<CR>
-    map <leader>t :call Top_window()<CR>
+    map <leader>ta :call Top_window()<CR>
 endif
