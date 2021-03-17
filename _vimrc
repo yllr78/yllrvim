@@ -4,7 +4,7 @@
 " -----------------------------------------------------------------------------
 "  < 判断操作系统是否是 Windows 还是 Linux >
 " -----------------------------------------------------------------------------
-let g:iswindows = 0
+ let g:iswindows = 0
 let g:islinux = 0
 if(has("win32") || has("win64") || has("win95") || has("win16"))
     let g:iswindows = 1
@@ -103,12 +103,14 @@ else
 endif
 
 " 以下为要安装或更新的插件，不同仓库都有（具体书写规范请参考帮助）
-Plug 'vim-scripts/a.vim', {'for': ['c', 'cpp']}
-Plug 'junegunn/vim-easy-align', {'on': '<Plug>(EasyAlign)'}
 Plug 'jiangmiao/auto-pairs'
+Plug 'junegunn/vim-easy-align', {'on': '<Plug>(EasyAlign)'}
 Plug 'alvan/vim-closetag', {'for': ['html', 'xml']}
 Plug 'vim-scripts/cSyntaxAfter'
+Plug 'kevinoid/vim-jsonc'
 Plug 'kien/rainbow_parentheses.vim'
+Plug 'dominikduda/vim_current_word'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'easymotion/vim-easymotion', {'on': ['<Plug>(easymotion-overwin-w)', '<Plug>(easymotion-bd-f)']}
 Plug 'mattn/emmet-vim', {'for': ['html','css']}
@@ -120,14 +122,15 @@ Plug 'preservim/tagbar'
 Plug 'vim-scripts/taglist.vim'
 Plug 'simnalamburt/vim-mundo', {'on': 'MundoToggle'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'tweekmonster/braceless.vim', { 'for' :['python', 'vim-plug'] }
 Plug 'Chiel92/vim-autoformat'
-Plug 'vim-scripts/repeat.vim'
-" Plug 'SirVer/ultisnips'
+Plug 'tpope/vim-repeat'
 Plug 'honza/vim-snippets'
 Plug 'tpope/vim-surround'
 Plug 'vim-scripts/ZoomWin'
 Plug 'iamcco/mathjax-support-for-mkdp', {'for': 'markdown'}
 Plug 'iamcco/markdown-preview.vim', {'for': 'markdown'}
+Plug 'dkarter/bullets.vim'
 Plug 'yianwillis/vimcdoc'
 Plug 'skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] }
 Plug 'skywind3000/asyncrun.extra'
@@ -136,7 +139,8 @@ Plug 'skywind3000/vim-dict'
 Plug 'voldikss/vim-floaterm'
 Plug 'sillybun/vim-repl', {'on': ['REPLToggle', 'REPLDebugStopAtCurrentLine']}
 Plug 'ludovicchabant/vim-gutentags'
-Plug 'tpope/vim-fugitive', {'on': ['Gw', 'Gc', 'Gcommit', 'G']}
+Plug 'tpope/vim-fugitive'
+Plug 'mhinz/vim-signify'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 " --------------以下为配色相关插件-------------
@@ -228,6 +232,7 @@ set updatetime=100 timeout timeoutlen=500 ttimeout ttimeoutlen=50 nolazyredraw
 "  < 声音告警配置 >
 " -----------------------------------------------------------------------------
 " set noerrorbells visualbell t_vb=
+" 禁用声光告警
 set vb t_vb=
 au GuiEnter * set t_vb=
 
@@ -289,23 +294,23 @@ nnoremap <space> @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
 
 
 " 比较文件
-nmap <C-F2> :vert diffsplit
+nnoremap <C-F2> :vert diffsplit
 
 " 新建标签
-map <M-F2> :tabnew<CR>
+noremap <M-F2> :tabnew<CR>
 
 " 用红色色块显示行尾空格
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 au InsertLeave * match ExtraWhitespace /\s\+$/
 
 " 常规模式下输入 cS 清除行尾空格
-nmap cK :%s/\s\+$//g<CR>:noh<CR>
+nnoremap cK :%s/\s\+$//g<CR>:noh<CR>
 
 " 常规模式下输入 cM 清除行尾 ^M 符号
-nmap cM :%s/\r$//g<CR>:noh<CR>
+nnoremap cM :%s/\r$//g<CR>:noh<CR>
 
 " 常规模式下输入 cL 清楚文件所有的空行
-nmap cL :g/^\s*$/d<CR>
+nnoremap cL :g/^\s*$/d<CR>
 
 " 在后面的搜索中禁用高亮显示
 " removes highlight of your last search
@@ -313,16 +318,16 @@ nmap cL :g/^\s*$/d<CR>
 noremap <c-n> :nohl<cr>
 
 " Ctrl + K 插入模式下光标向上移动
-imap <c-k> <Up>
+inoremap <c-k> <Up>
 
 " Ctrl + J 插入模式下光标向下移动
-imap <c-j> <Down>
+inoremap <c-j> <Down>
 
 " Ctrl + H 插入模式下光标向左移动
-imap <c-h> <Left>
+inoremap <c-h> <Left>
 
 " Ctrl + L 插入模式下光标向右移动
-imap <c-l> <Right>
+inoremap <c-l> <Right>
 
 " 可用<C-k,j,h,l>切换到上下左右的窗口中去, 包括内置终端
 noremap <c-k> <c-w>k
@@ -335,8 +340,8 @@ tnoremap <C-k> <C-w><C-k>
 tnoremap <C-l> <C-w><C-l>
 
 " 标签之间的移动
-map <M-h> <esc>:tabprevious<cr>
-map <M-l> <esc>:tabnext<cr>
+noremap <M-h> <esc>:tabprevious<cr>
+noremap <M-l> <esc>:tabnext<cr>
 
 " 可视模式下块移动
 " try to go into visual mode (v), thenselect several lines of code here and
@@ -351,13 +356,17 @@ au BufWinEnter * let w:m2=matchadd('Underlined', '\%>' . 80 . 'v.\+', -1)
 " -----------------------------------------------------------------------------
 "  < 界面配置 >
 " -----------------------------------------------------------------------------
-"  支持simple terminal终端正确显示颜色
-if g:islinux
-    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+"  支持终端下可以正确显示真彩
+if has("termguicolors")
+    " fix bug for vim
+    set t_8f=^[[38;2;%lu;%lu;%lum
+    set t_8b=^[[48;2;%lu;%lu;%lum
+
+    " enable true color
+    set termguicolors
 endif
 set number relativenumber                             "显示行号和相对行号
-set noshowcmd ruler rulerformat= laststatus=2         "不显示输入的命令和状态栏标尺
+set showcmd ruler rulerformat= laststatus=2           "显示输入的命令和状态栏标尺
 set display=lastline,uhex                             "显示设置
 set showtabline=2                                     "显示顶部tabline
 " 设置括号配对高亮
@@ -462,41 +471,6 @@ endfunction
 
 call NextColor()
 
-
-" 标志列高亮设置
-
-augroup HlGroupSettings
-    autocmd!
-    autocmd ColorScheme * call s:OnColorSchemeLoaded()
-augroup END
-function! s:OnColorSchemeLoaded() abort
-    let signcolumn_bg = matchstr(execute('hi SignColumn'), 'guibg=\zs\S*')
-    if empty(signcolumn_bg) | let signcolumn_bg = 'NONE' | endif
-    exe 'hi GitAdd                guifg=#00FF00 guibg=' . signcolumn_bg
-    exe 'hi GitModify             guifg=#00FFFF guibg=' . signcolumn_bg
-    exe 'hi GitDeleteTop          guifg=#FF2222 guibg=' . signcolumn_bg
-    exe 'hi GitDeleteBottom       guifg=#FF2222 guibg=' . signcolumn_bg
-    exe 'hi GitDeleteTopAndBottom guifg=#FF2222 guibg=' . signcolumn_bg
-    exe 'hi CocHintSign           guifg=#15aabf guibg=' . signcolumn_bg
-    exe 'hi CocInfoSign           guifg=#fab005 guibg=' . signcolumn_bg
-    exe 'hi CocWarningSign        guifg=#ff922b guibg=' . signcolumn_bg
-    exe 'hi CocErrorSign          guifg=#ff0000 guibg=' . signcolumn_bg
-    exe 'hi CursorLineNr          guibg='               . signcolumn_bg
-
-    hi VertSplit                  guifg=cyan
-    " hi CocFloating                guibg=blue
-    hi CursorLineNr               guifg=orange
-    " hi Normal                     guibg=#111111 guifg=#eeeeee
-    hi PmenuThumb                  guifg=white guibg=white
-    hi VisualNOS                  guibg=#404D3D
-
-    let normal_bg = matchstr(execute('hi Normal'), 'guibg=\zs\S*')
-    exe 'hi EndOfBuffer           guifg=' . normal_bg
-
-    " coclist will(might) change my cursor highlight
-    hi Cursor gui=reverse guifg=NONE guibg=NONE
-endfunction
-call s:OnColorSchemeLoaded()
 
 " 显示/隐藏菜单栏、工具栏、滚动条，可用 Ctrl + F11 切换
 if g:isGUI
@@ -611,7 +585,8 @@ let g:lightline = {
             \ 'active': {
             \ 'left': [
             \ ['mode', 'paste'],
-            \ ['fugitive', 'readonly', 'filename', 'Modifyed']
+            \ ['fugitive', 'readonly'],
+            \ ['filename', 'modified']
             \ ],
             \ 'right': [
             \ ['asyncrun_status'],
@@ -654,6 +629,9 @@ let g:lightline = {
 "   {
 "   \ 'fugitive': 'fn#lightline#GitBranch'
 "  \},
+
+
+
 " -----------------------------------------------------------------------------
 "  <lightline-bufferline 插件配置 >
 " -----------------------------------------------------------------------------
@@ -679,13 +657,12 @@ nmap <Leader>8 <Plug>lightline#bufferline#go(8)
 nmap <Leader>9 <Plug>lightline#bufferline#go(9)
 nmap <Leader>0 <Plug>lightline#bufferline#go(10)
 
+
 " -----------------------------------------------------------------------------
-"  < a.vim 插件配置 >
+"  < auto-pairs 插件配置 >
 " -----------------------------------------------------------------------------
-" 用于切换C/C++头文件
-" :A     ---切换头文件并独占整个窗口
-" :AV    ---切换头文件并垂直分割窗口
-" :AS    ---切换头文件并水平分割窗口
+" 用于括号与引号自动补全
+
 
 " -----------------------------------------------------------------------------
 "  < vim-easy-align 插件配置 >
@@ -699,23 +676,20 @@ xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
 
 " -----------------------------------------------------------------------------
-"  < auto-pairs 插件配置 >
-" -----------------------------------------------------------------------------
-" 用于括号与引号自动补全，不过会与函数原型提示插件echofunc冲突
-" 所以我就没有加入echofunc插件
-
-" -----------------------------------------------------------------------------
 "  < vim-closetag插件配置 >
 " -----------------------------------------------------------------------------
 " html文件自动闭合标签
 
+" -----------------------------------------------------------------------------
+"  < vim-jsonc 插件配置 >
+" -----------------------------------------------------------------------------
+"  高亮显示json文件
 
 " -----------------------------------------------------------------------------
 "  < cSyntaxAfter 插件配置 >
 " -----------------------------------------------------------------------------
 " 高亮括号与运算符等
 au! BufRead,BufNewFile,BufEnter *.{c,cpp,h,py,lua,java,javascript} call CSyntaxAfter()
-
 
 " -----------------------------------------------------------------------------
 "  < rainbow_parentheses.vim 插件配置 >
@@ -741,6 +715,31 @@ let g:rbpt_colorpairs = [
             \ ]
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
+
+
+
+" -----------------------------------------------------------------------------
+"  <  vim-visual-multi插件配置 >
+" -----------------------------------------------------------------------------
+" 多光标操作插件
+" 设置C-p为普通模式选择关键字快捷键
+"let g:VM_theme             = 'iceblue'
+"let g:VM_default_mappings = 0
+let g:VM_leader                     = {'default': ',', 'visual': ',', 'buffer': ','}
+let g:VM_custom_motions             = {'n': 'h', 'i': 'l', 'u': 'k', 'e': 'j', 'N': '0', 'I': '$', 'h': 'e'}
+let g:VM_maps                       = {}
+let g:VM_maps['Find Under']         = '<C-p>'
+let g:VM_maps['Find Subword Under'] = '<C-p>'
+let g:VM_maps["Undo"]               = 'u'
+let g:VM_maps["Redo"]               = '<C-r>'
+
+
+" -----------------------------------------------------------------------------
+"  <  vim_current_word插件配置 >
+" -----------------------------------------------------------------------------
+" 突出显示光标下方的单词及其所有出现的单词
+let g:vim_current_word#highlight_current_word = 0
+
 " -----------------------------------------------------------------------------
 "  <  LeaderF插件配置 >
 " -----------------------------------------------------------------------------
@@ -776,11 +775,11 @@ noremap <silent> <leader>fr :<C-U><C-R>=printf("Leaderf rg %s", "")<CR><CR>
 noremap <silent> <leader>fc :<C-U>Leaderf! --recall --stayOpen<CR>
 
 " 从当前buff中搜索光标所在行的内容
-noremap <silent> <leader>fi :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <silent> <leader>fw :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
 " 从当前目录所有文件中搜索当前光标所在行的内容
 noremap <silent> <leader>fa :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
 " 可视模式下在当前目录下所有文件中搜索选择内容
-xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+xnoremap fv :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 
 " 支持function选项可以搜索python的class
 let g:Lf_CtagsFuncOpts = {"python": "--python-kinds=fmc --language-force=Python"}
@@ -871,11 +870,17 @@ map <silent> <Space>F <Plug>(easymotion-bd-f)
 " vim中使用Git命令的插件
 " :Git 命令行格式
 
+" -----------------------------------------------------------------------------
+"  <  vim-signify插件配置 >
+" -----------------------------------------------------------------------------
+"  侧边栏显示Git状态的插件
 
 " -----------------------------------------------------------------------------
 "  < emmet-vim（前身为Zen coding） 插件配置 >
 " -----------------------------------------------------------------------------
 " HTML/CSS代码快速编写神器
+let g:user_emmet_install_global = 0
+autocmd FileType html,css EmmetInstall
 
 " -----------------------------------------------------------------------------
 "  < indentLine 插件配置 >
@@ -903,53 +908,48 @@ let g:indentLine_fileTypeExclude = [
 " -----------------------------------------------------------------------------
 if g:islinux
     let g:coc_data_home = '$HOME/.vim/coc'
+    let g:coc_config_home = '$HOME/.vim'
 else
     let g:coc_data_home = '$VIM/vimfiles/coc'
+    let g:coc_config_home = '$VIM/vimfiles'
 endif
-nnoremap <silent><nowait> <C-b> :call fn#keymap#n#scroll_win(0)<CR>
-nnoremap <silent><nowait> <C-f> :call fn#keymap#n#scroll_win(1)<CR>
-inoremap <silent><nowait><expr> <C-f>
-            \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" :
-            \ "<C-r>=fn#keymap#exec('normal! w')<CR>"
-inoremap <silent><nowait><expr> <C-b>
-            \ coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" :
-            \ "<C-r>=fn#keymap#exec('normal! b')<CR>"
-nnoremap <expr> <silent> <C-c> <SID>select_current_word_and_go_next()
-function! s:select_current_word_and_go_next()
-    if !get(g:, 'coc_cursors_activated', 0)
-        return "\<Plug>(coc-cursors-word)"
-    endif
-    " based on coc readme, this has been modified
-    " because I have mapped * to m`:keepjumps normal! *``zz<cr>
-    return "*n\<Plug>(coc-cursors-word):nohlsearch\<CR>"
-endfunc
 
-nmap     <silent> [g      <Plug>(coc-diagnostic-next)
-nmap     <silent> ]g      <Plug>(coc-diagnostic-prev)
+function! Show_documentation()
+	call CocActionAsync('highlight')
+	if (index(['vim','help'], &filetype) >= 0)
+		execute 'h '.expand('<cword>')
+	else
+		call CocAction('doHover')
+	endif
+endfunction
+
+nnoremap <Leader>h :call Show_documentation()<CR>
+nnoremap <silent> <space>y :<C-u>CocList -A --normal yank<cr>
+nnoremap <silent><nowait> <Leader>d :CocList diagnostics<cr>
+nmap <silent> <Space>=      <Plug>(coc-diagnostic-next)
+nmap <silent> <Space>-      <Plug>(coc-diagnostic-prev)
 nnoremap <silent> cl         :<C-u>CocList<CR>
 nnoremap <silent> <Leader>cs :<C-u>CocSearch <C-r><C-w><CR>
-nmap     <silent> <Leader>cf <Plug>(coc-fix-current)
+" nmap     <silent> <Leader>rf <Plug>(coc-fix-current)
 nmap     <silent> <Leader>cd <Plug>(coc-definition)
 nmap     <silent> <Leader>cy <Plug>(coc-type-definition)
-nmap     <silent> <Leader>cr <Plug>(coc-refactor)
+nmap     <silent> <Leader>cf <Plug>(coc-references-used)
 nmap     <silent> <Leader>ci <Plug>(coc-implementation)
+nmap     <silent> <Leader>cr <Plug>(coc-refactor)
 nmap     <silent> <Leader>rn <Plug>(coc-rename)
-nmap     <silent> <Leader>rf <Plug>(coc-references-used)
 nnoremap <silent> <Leader>rs :<C-u>CocRestart<CR>
-xmap if <Plug>(coc-funcobj-a)
-omap if <Plug>(coc-funcobj-a)
-omap ig <Plug>(coc-git-chunk-inner)
-xmap ig <Plug>(coc-git-chunk-inner)
-" coc-git
-nnoremap <silent> gs  :CocCommand git.chunkStage<CR>
-nnoremap <silent> go  :CocCommand git.browserOpen<CR>
-nnoremap <silent> gd  :CocCommand git.chunkInfo<CR>
-nnoremap <silent> gm  :CocCommand git.showCommit<CR>
-nnoremap <silent> gw  :call fn#file#refresh()<CR>:Gw<CR>:call fn#file#refresh()<CR>
-nnoremap <silent> gW  :AsyncRun -cwd=<root> -silent=1 git add .<CR>
-nnoremap <silent> gca :Gcommit --amend -v<CR>
-nnoremap <silent> gcm :Gcommit -v<CR>
-nnoremap <silent> gcu :CocCommand git.chunkUndo<CR>:call timer_start(50, {->execute('update')})<CR>
+" 格式化选择区域的javascript/typescript/css/json代码
+xmap <Space>cp  <Plug>(coc-format-selected)
+nmap <Space>cp  <Plug>(coc-format-selected)
+" 文本对象
+xmap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap if <Plug>(coc-funcobj-i)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
 " coc-snippets
 " 不要改动
 inoremap <silent><expr> <TAB>
@@ -962,30 +962,19 @@ function! s:check_back_space() abort
 endfunction
 let g:coc_snippet_next = '<tab>'
 let g:coc_snippet_prev = '<S-Tab>'
+let g:snips_author = 'yllr'
 " coc-translator
-" popup
-nmap <Leader>t <Plug>(coc-translator-p)
-vmap <Leader>t <Plug>(coc-translator-pv)
-" echo
-nmap <Leader>e <Plug>(coc-translator-e)
-vmap <Leader>e <Plug>(coc-translator-ev)
-" replace
-nmap <Leader>r <Plug>(coc-translator-r)
-vmap <Leader>r <Plug>(coc-translator-rv)
+nmap <Leader>ct <Plug>(coc-translator-p)
+vmap <Leader>ct <Plug>(coc-translator-pv)
 " coc extensions
 let g:coc_global_extensions = [
             \ 'coc-browser',
             \ 'coc-css',
             \ 'coc-diagnostic',
             \ 'coc-dictionary',
-            \ 'coc-ecdict',
             \ 'coc-emmet',
-            \ 'coc-emoji',
             \ 'coc-eslint',
-            \ 'coc-explorer',
             \ 'coc-floaterm',
-            \ 'coc-gist',
-            \ 'coc-git',
             \ 'coc-highlight',
             \ 'coc-html',
             \ 'coc-json',
@@ -993,10 +982,10 @@ let g:coc_global_extensions = [
             \ 'coc-leetcode',
             \ 'coc-lists',
             \ 'coc-marketplace',
-            \ 'coc-pairs',
             \ 'coc-prettier',
             \ 'coc-pyright',
             \ 'coc-python',
+            \ 'coc-lua',
             \ 'coc-syntax',
             \ 'coc-snippets',
             \ 'coc-tag',
@@ -1013,11 +1002,21 @@ let g:coc_global_extensions = [
 
 
 " -----------------------------------------------------------------------------
+"  < braceless.vim 插件配置 >
+" -----------------------------------------------------------------------------
+" python语言的缩进、文本对象、代码块移动、折叠、缩进指南高亮等功能
+" 完整配置，打开缩进、折叠、缩进指南高亮全部功能
+" autocmd FileType haml,yaml,coffee BracelessEnable +indent +fold +highlight
+" 只打开缩进和折叠支持
+autocmd FileType haml,yaml,coffee BracelessEnable +indent +fold
+
+
+" -----------------------------------------------------------------------------
 "  < vim-autoformat 插件配置 >
 " -----------------------------------------------------------------------------
 " 各种编程语言的自动格式化插件
 " 添加一键格式化
-noremap <c-p> :Autoformat<cr>
+noremap <Leader>pp :Autoformat<cr>
 " let g:autoformat_autoindent = 0
 " let g:autoformat_retab = 0
 " let g:autoformat_remove_trailing_spaces = 0
@@ -1026,6 +1025,7 @@ noremap <c-p> :Autoformat<cr>
 " -----------------------------------------------------------------------------
 "  < tcomment_vim 插件配置 >
 " -----------------------------------------------------------------------------
+"  注释插件，普通模式gcc注释当前行，可视模式gc注释块
 let g:tcomment_types = {'c': '// %s'}
 nnoremap <silent> gC vil:TCommentInline<CR>
 vnoremap <silent> gC :TCommentBlock<CR>
@@ -1035,7 +1035,7 @@ vnoremap <silent> gC :TCommentBlock<CR>
 " 有目录村结构的文件浏览插件
 
 " 常规模式下输入 F2 调用插件
-nmap <F2> :NERDTreeToggle<CR>
+nnoremap <F2> :NERDTreeToggle<CR>
 " let g:NERDTreeDirArrowExpandable = '|'
 " let g:NERDTreeDirArrowCollapsible = '+'
 let g:NERDTreeAutoDeleteBuffer = 1
@@ -1057,9 +1057,10 @@ endif
 " 要求使用nerd系列字体
 
 " -----------------------------------------------------------------------------
-"  < repeat 插件配置 >
+"  < vim-repeat 插件配置 >
 " -----------------------------------------------------------------------------
-" 主要用"."命令来重复上次插件使用的命令
+" 用"."命令来重复上次插件使用的命令,目前支持的插件有：surround.vim,
+" speeddating.vim,unimpaired.vim,vim-easyclip,vim-radical
 
 " -----------------------------------------------------------------------------
 
@@ -1074,7 +1075,7 @@ endif
 " let g:UltiSnipsJumpForwardTrigger="<tab>"
 " let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 " 使用 UltiSnipsEdit 命令时垂直分割屏幕
-let g:UltiSnipsEditSplit="vertical"
+" let g:UltiSnipsEditSplit="vertical"
 
 " -----------------------------------------------------------------------------
 "  < vim-snippets 插件配置 >
@@ -1096,7 +1097,7 @@ let g:UltiSnipsEditSplit="vertical"
 " 相对 TagList 能更好的支持面向对象
 
 " 常规模式下输入 tb 调用插件，如果有打开 TagList 窗口则先将其关闭
-nmap tb :TlistClose<CR>:TagbarToggle<CR>
+nnoremap tb :TlistClose<CR>:TagbarToggle<CR>
 
 let g:tagbar_width=30                       "设置窗口宽度
 " let g:tagbar_left=1                         "在左侧窗口中显示
@@ -1108,7 +1109,7 @@ let g:tagbar_width=30                       "设置窗口宽度
 " 那里面列出了当前文件中的所有宏,全局变量, 函数名等
 
 " 常规模式下输入 tl 调用插件，如果有打开 Tagbar 窗口则先将其关闭
-nmap tl :TagbarClose<CR>:Tlist<CR>
+nnoremap tl :TagbarClose<CR>:Tlist<CR>
 
 let Tlist_Show_One_File=1                   "只显示当前文件的tags
 " let Tlist_Enable_Fold_Column=0              "使taglist插件不显示左边的折叠行
@@ -1237,7 +1238,7 @@ let g:repl_program = {
             \   'default': 'zsh',
             \   'r': 'R',
             \   'lua': 'lua',
-            \   'vim': 'vim -e',
+            \   'vim': 'vim -e'
             \   }
 let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
@@ -1308,6 +1309,12 @@ let g:gutentags_auto_add_gtags_cscope = 0
 " MarkdownPerviewStop 关闭预览窗口
 " markdown-support-for-mkdp 支持预览数学公式
 " -----------------------------------------------------------------------------
+
+" -----------------------------------------------------------------------------
+"  < bullets.vim 插件配置 >
+" -----------------------------------------------------------------------------
+" 自动格式化编号插件
+
 
 " -----------------------------------------------------------------------------
 "  < ZoomWin 插件配置 >
@@ -1566,7 +1573,7 @@ endfunc
 " 用于 Windows Gvim 全屏窗口，可用 F11 切换
 " 全屏后再隐藏菜单栏、工具栏、滚动条效果更好
 if (g:iswindows && g:isGUI)
-    map <F11> <Esc>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR>
+    map <c-F11> <Esc>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR>
 endif
 
 " -----------------------------------------------------------------------------
