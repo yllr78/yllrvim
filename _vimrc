@@ -585,7 +585,7 @@ let g:lightline = {
             \ 'active': {
             \ 'left': [
             \ ['mode', 'paste'],
-            \ ['fugitive', 'readonly'],
+            \ ['fugitive', 'signify', 'readonly'],
             \ ['filename', 'modified']
             \ ],
             \ 'right': [
@@ -615,7 +615,8 @@ let g:lightline = {
             \ 'vim_logo': "#"
             \ },
             \ 'component_function': {
-              \ 'fugitive': 'FugitiveHead'
+              \ 'fugitive': 'MyGitBranch',
+              \ 'signify': 'sy#repo#get_stats_decorated'
              \},
             \ 'component_expand': { 'buffers': 'lightline#bufferline#buffers' },
             \ 'component_type': { 'buffers': 'tabsel' },
@@ -625,11 +626,9 @@ let g:lightline = {
             \ }
             \ }
 
-" \ 'component_function':
-"   {
-"   \ 'fugitive': 'fn#lightline#GitBranch'
-"  \},
-
+function! MyGitBranch()
+    return "\ue0a0".FugitiveHead()
+endfunction
 
 
 " -----------------------------------------------------------------------------
@@ -763,7 +762,6 @@ let g:vim_current_word#highlight_current_word = 0
 " <F5>: 刷新缓存
 
 " 设置快捷键
-" let g:Lf_ShortcutF = "<leader>ff"
 noremap <silent> <leader>ff :<C-U><C-R>=printf("Leaderf file %s", "")<CR><CR>
 noremap <silent> <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <silent> <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
