@@ -627,7 +627,8 @@ let g:lightline = {
             \ }
 
 function! MyGitBranch()
-    return "\ue0a0".FugitiveHead()
+    if exists('g:loaded_fugitive')
+        return empty(FugitiveHead()) ? '': "\ue0a0".FugitiveHead()
 endfunction
 
 
