@@ -585,11 +585,10 @@ let g:lightline = {
             \ 'active': {
             \ 'left': [
             \ ['mode', 'paste'],
-            \ ['fugitive', 'signify', 'readonly'],
-            \ ['filename', 'modified']
+            \ ['filename', 'modified'],
+            \ ['readonly', 'fugitive', 'signify', 'cocstatus']
             \ ],
             \ 'right': [
-            \ ['asyncrun_status'],
             \ ['lineinfo'],
             \ ['percent'],
             \ ['fileformat', 'fileencoding'],
@@ -616,7 +615,8 @@ let g:lightline = {
             \ },
             \ 'component_function': {
               \ 'fugitive': 'MyGitBranch',
-              \ 'signify': 'sy#repo#get_stats_decorated'
+              \ 'signify': 'sy#repo#get_stats_decorated',
+              \ 'cocstatus': 'coc#status'
              \},
             \ 'component_expand': { 'buffers': 'lightline#bufferline#buffers' },
             \ 'component_type': { 'buffers': 'tabsel' },
