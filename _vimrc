@@ -608,7 +608,7 @@ let g:lightline = {
             \ }
             \ },
             \ 'component': {
-            \ 'lineinfo': ' %l,%-v',
+            \ 'lineinfo': ' %l/%L,%-v',
             \ 'percent': '%p%%',
             \ 'close': '%{has("nvim") ? " NVIM " : " VIM "}',
             \ 'vim_logo': "#"
