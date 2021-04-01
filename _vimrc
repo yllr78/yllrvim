@@ -107,7 +107,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'junegunn/vim-easy-align', {'on': '<Plug>(EasyAlign)'}
 Plug 'alvan/vim-closetag', {'for': ['html', 'xml']}
 Plug 'vim-scripts/cSyntaxAfter'
-Plug 'kevinoid/vim-jsonc'
+Plug 'kevinoid/vim-jsonc', {'for': ['json']}
 Plug 'kien/rainbow_parentheses.vim'
 Plug 'dominikduda/vim_current_word'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
@@ -121,7 +121,6 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'preservim/tagbar'
 Plug 'vim-scripts/taglist.vim'
 Plug 'simnalamburt/vim-mundo', {'on': 'MundoToggle'}
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tweekmonster/braceless.vim', { 'for' :['python', 'vim-plug'] }
 Plug 'Chiel92/vim-autoformat'
 Plug 'tpope/vim-repeat'
@@ -138,6 +137,7 @@ Plug 'skywind3000/asynctasks.vim'
 Plug 'skywind3000/vim-dict'
 Plug 'voldikss/vim-floaterm'
 Plug 'sillybun/vim-repl', {'on': ['REPLToggle', 'REPLDebugStopAtCurrentLine']}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'tpope/vim-fugitive'
 Plug 'mhinz/vim-signify'
