@@ -357,14 +357,16 @@ au BufWinEnter * let w:m2=matchadd('Underlined', '\%>' . 80 . 'v.\+', -1)
 "  < 界面配置 >
 " -----------------------------------------------------------------------------
 "  支持终端下可以正确显示真彩
-if has("termguicolors")
-    " fix bug for vim
-    set t_8f=^[[38;2;%lu;%lu;%lum
-    set t_8b=^[[48;2;%lu;%lu;%lum
-
-    " enable true color
-    set termguicolors
-endif
+" if has("termguicolors")
+"     " fix bug for vim
+"     set t_8f=^[[38;2;%lu;%lu;%lum
+"     set t_8b=^[[48;2;%lu;%lu;%lum
+"
+"     " enable true color
+"     set termguicolors
+" endif
+" 使用256色配色
+" set t_Co=256
 set number relativenumber                             "显示行号和相对行号
 set showcmd ruler rulerformat= laststatus=2           "显示输入的命令和状态栏标尺
 set display=lastline,uhex                             "显示设置
