@@ -4,7 +4,7 @@
 " -----------------------------------------------------------------------------
 "  < 判断操作系统是否是 Windows 还是 Linux >
 " -----------------------------------------------------------------------------
- let g:iswindows = 0
+let g:iswindows = 0
 let g:islinux = 0
 if(has("win32") || has("win64") || has("win95") || has("win16"))
     let g:iswindows = 1
@@ -357,14 +357,14 @@ au BufWinEnter * let w:m2=matchadd('Underlined', '\%>' . 80 . 'v.\+', -1)
 "  < 界面配置 >
 " -----------------------------------------------------------------------------
 "  支持终端下可以正确显示真彩
-" if has("termguicolors")
-"     " fix bug for vim
-"     set t_8f=^[[38;2;%lu;%lu;%lum
-"     set t_8b=^[[48;2;%lu;%lu;%lum
-"
-"     " enable true color
-"     set termguicolors
-" endif
+if has("termguicolors")
+    " fix bug for vim
+    set t_8f=[38;2;%lu;%lu;%lum
+    set t_8b=[48;2;%lu;%lu;%lum
+
+    " enable true color
+    set termguicolors
+endif
 " 使用256色配色
 " set t_Co=256
 set number relativenumber                             "显示行号和相对行号
@@ -386,7 +386,7 @@ set nosplitbelow nosplitright nostartofline linespace=0 whichwrap=b,s scrolloff=
 " 分割窗口设置
 set equalalways winfixwidth winfixheight winminwidth=3 winheight=3 winminheight=3
 " 终端设置
-set termguicolors cpoptions+=I  nowarn noconfirm
+set cpoptions+=I  nowarn noconfirm
 " gui和win32控制台下光标样式设置
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 set go=                                               "不要图形按钮
