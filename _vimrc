@@ -109,7 +109,6 @@ Plug 'alvan/vim-closetag', {'for': ['html', 'xml']}
 Plug 'vim-scripts/cSyntaxAfter'
 Plug 'kevinoid/vim-jsonc', {'for': ['json']}
 Plug 'kien/rainbow_parentheses.vim'
-Plug 'dominikduda/vim_current_word'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'easymotion/vim-easymotion', {'on': ['<Plug>(easymotion-overwin-w)', '<Plug>(easymotion-bd-f)']}
@@ -738,12 +737,6 @@ let g:VM_maps["Redo"]               = '<C-r>'
 
 
 " -----------------------------------------------------------------------------
-"  <  vim_current_word插件配置 >
-" -----------------------------------------------------------------------------
-" 突出显示光标下方的单词及其所有出现的单词
-let g:vim_current_word#highlight_current_word = 0
-
-" -----------------------------------------------------------------------------
 "  <  LeaderF插件配置 >
 " -----------------------------------------------------------------------------
 " 一个异步全路径模糊文件，缓冲区，函数检索插件；详细帮助见 :h leaderf.txt
@@ -943,6 +936,8 @@ nnoremap <silent> <Leader>rs :<C-u>CocRestart<CR>
 " 格式化选择区域的javascript/typescript/css/json代码
 xmap <Space>cp  <Plug>(coc-format-selected)
 nmap <Space>cp  <Plug>(coc-format-selected)
+" 高亮光标下的文本
+autocmd CursorHold * silent call CocActionAsync('highlight')
 " 文本对象
 xmap if <Plug>(coc-funcobj-i)
 xmap af <Plug>(coc-funcobj-a)
